@@ -9,11 +9,14 @@ Week 2는 Kaggle의 `The Movies Dataset`을 사용해 ETL의 `T`, 즉 Transform 
 ```text
 week2/
 ├── docs/
-│   └── README.md
+│   ├── README.md
+│   └── w2_2_session.md
 ├── src/
 │   ├── download_dataset.py
 │   ├── w2_1.ipynb
 │   ├── w2_1_skeleton.ipynb
+│   ├── w2_1_bonus.ipynb
+│   ├── w2_1_bonus_skeleton.ipynb
 │   ├── w2_2.ipynb
 │   └── w2_2_skeleton.ipynb
 └── data/
@@ -90,34 +93,33 @@ week2/src/w2_1_skeleton.ipynb
 
 `w2_1.ipynb`와 같은 흐름이지만 핵심 코드 일부가 `TODO`로 비어 있습니다. 수업 중 직접 채워보는 용도입니다.
 
-## 실습 2-2: 보너스 Transform
+## 실습 2-2: Transform 심화
 
 ```text
 week2/src/w2_2.ipynb
 ```
 
-목표는 CSV 안에 문자열 형태로 들어 있는 리스트 데이터를 관계형 테이블에 가까운 구조로 바꾸는 것입니다.
+목표는 중간 테이블을 보강하고, 비즈니스 질문에 답하는 최종 테이블을 만드는 것입니다.
 
-예를 들어 영화 1행 안에 여러 배우, 여러 키워드가 문자열로 들어 있으면 바로 조인하거나 집계하기 어렵습니다. 이를 `영화-키워드`, `영화-배우`, `영화-감독`처럼 관계 1개당 1행인 테이블로 바꾸면 이후 분석과 적재가 쉬워집니다.
+이번 실습에서는 `movies_clean`에 `keywords.csv`에서 추출한 대표 키워드를 조인하고, `groupby + agg`, `pivot_table()`, `melt()`를 사용해 business table을 만듭니다.
 
 주요 내용:
 
-- `credits.csv`, `keywords.csv` 원본 확인
-- 영화 ID 기준으로 데이터 맞추기
-- 문자열 리스트 파싱
-- `keywords`에서 `movie_keywords` 테이블 만들기
-- `cast`에서 `movie_cast` 테이블 만들기
-- `crew`에서 `movie_crew`, `directors` 테이블 만들기
-- 키워드별 영화 수 확인
-- 키워드별 평균 평점 확인
-- 배우-키워드 관계 확인
-- 감독-키워드 관계 확인
+- 이번 시간에 풀 비즈니스 질문 확인
+- `keywords.csv`에서 `main_keyword` 추출
+- `movies_clean + keywords_clean` 조인
+- 수익성/효율 분석을 위한 파생 컬럼 생성
+- 신뢰 가능한 고평점 영화 필터링
+- 연도별 요약 테이블 생성
+- 연대 x 대표 키워드 pivot table 생성
+- 대표 키워드별 business table 생성
+- `melt()`로 wide table을 long table로 변환
 
 핵심 메시지:
 
 ```text
-영화 1행 안에 여러 값이 들어 있는 구조
-→ 관계 1개당 1행인 테이블
+중간 테이블을 재사용 가능한 형태로 보강하고
+→ 목적이 분명한 비즈니스 테이블로 집계한다
 ```
 
 ## 실습 2-2 스켈레톤
@@ -128,11 +130,52 @@ week2/src/w2_2_skeleton.ipynb
 
 `w2_2.ipynb`와 같은 흐름이지만 핵심 Transform 코드 일부가 `TODO`로 비어 있습니다.
 
+스켈레톤에서는 세션 목표와 직접 연결되는 부분만 비워둡니다.
+
+- join
+- filtering
+- `groupby + agg`
+- `pivot_table`
+- `melt`
+
+## 실습 2-1 보너스
+
+```text
+week2/src/w2_1_bonus.ipynb
+```
+
+`w2_1` 이후 추가로 볼 수 있는 보너스 실습입니다. 문자열 형태로 들어 있는 리스트 데이터를 관계 테이블에 가까운 구조로 바꾸는 심화 내용을 다룹니다.
+
+예를 들어 영화 1행 안에 여러 배우, 여러 키워드가 문자열로 들어 있으면 바로 조인하거나 집계하기 어렵습니다. 이를 `영화-키워드`, `영화-배우`, `영화-감독`처럼 관계 1개당 1행인 테이블로 바꾸면 이후 분석과 적재가 쉬워집니다.
+
+```text
+영화 1행 안에 여러 값이 들어 있는 구조
+→ 관계 1개당 1행인 테이블
+```
+
+## 실습 2-1 보너스 스켈레톤
+
+```text
+week2/src/w2_1_bonus_skeleton.ipynb
+```
+
+`w2_1_bonus.ipynb`와 같은 흐름이지만 핵심 Transform 코드 일부가 `TODO`로 비어 있습니다.
+
+## 노트북 작성 가이드
+
+실습 원본과 스켈레톤 노트북을 만들 때의 공통 기준은 루트 문서에 정리했습니다.
+
+```text
+docs/notebook_authoring_guide.md
+```
+
 ## 권장 실행 순서
 
 1. 루트 README를 참고해 가상환경을 만들고 라이브러리를 설치합니다.
 2. `python week2/src/download_dataset.py`로 데이터를 다운로드합니다.
 3. `week2/src/w2_1.ipynb`를 실행해 clean table을 만듭니다.
 4. 필요하면 `week2/src/w2_1_skeleton.ipynb`로 같은 흐름을 직접 채워봅니다.
-5. `week2/src/w2_2.ipynb`로 보너스 Transform 실습을 진행합니다.
-6. 필요하면 `week2/src/w2_2_skeleton.ipynb`로 심화 내용을 직접 채워봅니다.
+5. 필요하면 `week2/src/w2_1_bonus.ipynb`로 보너스 실습을 진행합니다.
+6. 필요하면 `week2/src/w2_1_bonus_skeleton.ipynb`로 보너스 핵심 코드를 직접 채워봅니다.
+7. `week2/src/w2_2.ipynb`로 Transform 심화 실습을 진행합니다.
+8. 필요하면 `week2/src/w2_2_skeleton.ipynb`로 핵심 코드를 직접 채워봅니다.

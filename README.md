@@ -54,6 +54,10 @@ jupyter lab
 
 - [Week 2 실습 안내](week2/docs/README.md)
 
+## 공통 작성 가이드
+
+- [실습 노트북 작성 가이드](docs/notebook_authoring_guide.md)
+
 ## 데이터 관리 원칙
 
 실습용 원본 데이터와 노트북 실행 결과물은 GitHub에 올리지 않습니다.
