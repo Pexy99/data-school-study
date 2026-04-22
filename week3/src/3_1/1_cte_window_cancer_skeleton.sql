@@ -75,10 +75,7 @@ SELECT
     age,
     bmi,
     diagnosis,
-    CASE
-        WHEN diagnosis = 1 THEN 'Cancer'
-        ELSE 'No Cancer'
-    END AS diagnosis_label
+    TODO AS diagnosis_label
 FROM cancer_data
 LIMIT 20;
 
@@ -112,11 +109,8 @@ WITH diagnosis_labeled AS (
         bmi,
         diagnosis,
         genetic_risk,
-        CASE
-            WHEN diagnosis = 1 THEN 'Cancer'
-            ELSE 'No Cancer'
-        END AS diagnosis_label
-    FROM cancer_data
+        TODO AS diagnosis_label
+FROM cancer_data
 )
 -- 2. intermediate 결과를 다시 읽어온다.
 SELECT
@@ -177,9 +171,7 @@ SELECT
     age,
     bmi,
     diagnosis,
-    RANK() OVER (
-        ORDER BY bmi DESC
-    ) AS bmi_rank_all
+    TODO AS bmi_rank_all
 FROM cancer_data
 ORDER BY bmi_rank_all
 LIMIT 20;
@@ -202,9 +194,7 @@ WITH ranked_all AS (
         age,
         bmi,
         diagnosis,
-        RANK() OVER (
-            ORDER BY bmi DESC
-        ) AS bmi_rank_all
+        TODO AS bmi_rank_all
     FROM cancer_data
 )
 SELECT
@@ -213,7 +203,7 @@ SELECT
     diagnosis,
     bmi_rank_all
 FROM ranked_all
-WHERE bmi_rank_all BETWEEN 3 AND 10
+WHERE TODO
 ORDER BY bmi_rank_all;
 
 -- 완성되면 대략 이런 결과가 나와야 함:
@@ -249,10 +239,7 @@ SELECT
     age,
     bmi,
     genetic_risk,
-    RANK() OVER (
-        PARTITION BY diagnosis
-        ORDER BY bmi DESC
-    ) AS bmi_rank_in_group
+    TODO AS bmi_rank_in_group
 FROM cancer_data
 ORDER BY diagnosis, bmi_rank_in_group
 LIMIT 20;
@@ -274,14 +261,8 @@ WITH ranked_patients AS (
         age,
         bmi,
         genetic_risk,
-        RANK() OVER (
-            PARTITION BY diagnosis
-            ORDER BY bmi DESC
-        ) AS bmi_rank_in_group,
-        ROW_NUMBER() OVER (
-            PARTITION BY diagnosis
-            ORDER BY bmi DESC
-        ) AS sample_row_num
+        TODO AS bmi_rank_in_group,
+        TODO AS sample_row_num
     FROM cancer_data
 )
 SELECT
@@ -294,7 +275,7 @@ SELECT
     genetic_risk,
     bmi_rank_in_group
 FROM ranked_patients
-WHERE sample_row_num <= 3
+WHERE TODO
 ORDER BY diagnosis_label, sample_row_num;
 
 -- 완성되면 대략 이런 결과가 나와야 함:
@@ -333,16 +314,8 @@ WITH patients_with_avg AS (
         diagnosis,
         age,
         bmi,
-        ROUND(
-            AVG(bmi) OVER (
-                PARTITION BY diagnosis
-            ),
-            2
-        ) AS group_avg_bmi,
-        ROW_NUMBER() OVER (
-            PARTITION BY diagnosis
-            ORDER BY bmi DESC
-        ) AS sample_row_num
+        TODO AS group_avg_bmi,
+        TODO AS sample_row_num
     FROM cancer_data
 )
 SELECT
@@ -361,19 +334,9 @@ WITH patients_with_group_stats AS (
         diagnosis,
         age,
         bmi,
-        COUNT(*) OVER (
-            PARTITION BY diagnosis
-        ) AS group_patient_count,
-        ROUND(
-            AVG(bmi) OVER (
-                PARTITION BY diagnosis
-            ),
-            2
-        ) AS group_avg_bmi,
-        ROW_NUMBER() OVER (
-            PARTITION BY diagnosis
-            ORDER BY bmi DESC
-        ) AS sample_row_num
+        TODO AS group_patient_count,
+        TODO AS group_avg_bmi,
+        TODO AS sample_row_num
     FROM cancer_data
 )
 SELECT
@@ -383,7 +346,7 @@ SELECT
     group_patient_count,
     group_avg_bmi
 FROM patients_with_group_stats
-WHERE sample_row_num <= 3
+WHERE TODO
 ORDER BY diagnosis, sample_row_num;
 
 -- 4. 여기서도 핵심은 window function이다.
@@ -393,22 +356,9 @@ WITH patients_with_group_stats AS (
         diagnosis,
         age,
         bmi,
-        ROUND(
-            AVG(bmi) OVER (
-                PARTITION BY diagnosis
-            ),
-            2
-        ) AS group_avg_bmi,
-        ROUND(
-            bmi - AVG(bmi) OVER (
-                PARTITION BY diagnosis
-            ),
-            2
-        ) AS bmi_diff_from_group_avg,
-        ROW_NUMBER() OVER (
-            PARTITION BY diagnosis
-            ORDER BY bmi DESC
-        ) AS sample_row_num
+        TODO AS group_avg_bmi,
+        TODO AS bmi_diff_from_group_avg,
+        TODO AS sample_row_num
     FROM cancer_data
 )
 SELECT
@@ -421,7 +371,7 @@ SELECT
     group_avg_bmi,
     bmi_diff_from_group_avg
 FROM patients_with_group_stats
-WHERE sample_row_num <= 3
+WHERE TODO
 ORDER BY diagnosis_label, sample_row_num;
 
 -- 완성되면 대략 이런 결과가 나와야 함:
@@ -465,7 +415,7 @@ WITH patient_age_band AS (
         age,
         bmi,
         diagnosis,
-        (age / 10) * 10 AS age_band
+        TODO AS age_band
     FROM cancer_data
 )
 SELECT
@@ -483,7 +433,7 @@ WITH patient_age_band AS (
         age,
         bmi,
         diagnosis,
-        (age / 10) * 10 AS age_band
+        TODO AS age_band
     FROM cancer_data
 )
 SELECT
@@ -491,10 +441,7 @@ SELECT
     age,
     bmi,
     diagnosis,
-    RANK() OVER (
-        PARTITION BY age_band
-        ORDER BY bmi DESC
-    ) AS bmi_rank_in_age_band
+    TODO AS bmi_rank_in_age_band
 FROM patient_age_band
 ORDER BY age_band, bmi_rank_in_age_band
 LIMIT 20;
@@ -506,7 +453,7 @@ WITH patient_age_band AS (
         age,
         bmi,
         diagnosis,
-        (age / 10) * 10 AS age_band
+        TODO AS age_band
     FROM cancer_data
 ),
 ranked_patients AS (
@@ -515,10 +462,7 @@ ranked_patients AS (
         age,
         bmi,
         diagnosis,
-        ROW_NUMBER() OVER (
-            PARTITION BY age_band
-            ORDER BY bmi DESC
-        ) AS bmi_row_num_in_age_band
+        TODO AS bmi_row_num_in_age_band
     FROM patient_age_band
 )
 SELECT
@@ -528,7 +472,7 @@ SELECT
     diagnosis,
     bmi_row_num_in_age_band
 FROM ranked_patients
-WHERE bmi_row_num_in_age_band <= 10
+WHERE TODO
 ORDER BY age_band, bmi_row_num_in_age_band
 LIMIT 20;
 
@@ -558,14 +502,11 @@ LIMIT 20;
 -- 1. 먼저 예제 6의 핵심 결과인 "나이대별 BMI top 10"을 다시 만든다.
 WITH ranked_patients AS (
     SELECT
-        (age / 10) * 10 AS age_band,
+        TODO AS age_band,
         age,
         bmi,
         diagnosis,
-        ROW_NUMBER() OVER (
-            PARTITION BY (age / 10) * 10
-            ORDER BY bmi DESC
-        ) AS bmi_row_num_in_age_band
+        TODO AS bmi_row_num_in_age_band
     FROM cancer_data
 )
 SELECT
@@ -575,7 +516,7 @@ SELECT
     diagnosis,
     bmi_row_num_in_age_band
 FROM ranked_patients
-WHERE bmi_row_num_in_age_band <= 10
+WHERE TODO
 ORDER BY age_band, bmi_row_num_in_age_band
 LIMIT 20;
 
@@ -586,7 +527,7 @@ WITH patient_age_band AS (
         age,
         bmi,
         diagnosis,
-        (age / 10) * 10 AS age_band
+        TODO AS age_band
     FROM cancer_data
 ),
 ranked_patients AS (
@@ -595,10 +536,7 @@ ranked_patients AS (
         age,
         bmi,
         diagnosis,
-        ROW_NUMBER() OVER (
-            PARTITION BY age_band
-            ORDER BY bmi DESC
-        ) AS bmi_row_num_in_age_band
+        TODO AS bmi_row_num_in_age_band
     FROM patient_age_band
 )
 SELECT
@@ -608,7 +546,7 @@ SELECT
     diagnosis,
     bmi_row_num_in_age_band
 FROM ranked_patients
-WHERE bmi_row_num_in_age_band <= 10
+WHERE TODO
 ORDER BY age_band, bmi_row_num_in_age_band
 LIMIT 20;
 
@@ -620,7 +558,7 @@ WITH patient_age_band AS (
         age,
         bmi,
         diagnosis,
-        (age / 10) * 10 AS age_band
+        TODO AS age_band
     FROM cancer_data
 ),
 ranked_patients AS (
@@ -629,19 +567,16 @@ ranked_patients AS (
         age,
         bmi,
         diagnosis,
-        ROW_NUMBER() OVER (
-            PARTITION BY age_band
-            ORDER BY bmi DESC
-        ) AS bmi_row_num_in_age_band
+        TODO AS bmi_row_num_in_age_band
     FROM patient_age_band
 )
 SELECT
     age_band,
-    COUNT(*) AS patient_count,
-    SUM(diagnosis) AS cancer_patient_count,
-    ROUND(AVG(diagnosis), 3) AS cancer_ratio
+    TODO AS patient_count,
+    TODO AS cancer_patient_count,
+    TODO AS cancer_ratio
 FROM ranked_patients
-WHERE bmi_row_num_in_age_band <= 10
+WHERE TODO
 GROUP BY age_band
 ORDER BY age_band;
 
