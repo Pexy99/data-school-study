@@ -136,6 +136,16 @@ FROM diagnosis_labeled;
 이 쿼리는 "라벨 붙이기"를 intermediate 단계로 분리해서  
 바깥 쿼리가 더 읽기 쉬워지게 만듭니다.
 
+예상 실행 결과 예시:
+
+```text
+age | bmi  | diagnosis_label
+34  | 24.1 | No Cancer
+58  | 29.3 | No Cancer
+47  | 31.5 | Cancer
+63  | 28.7 | Cancer
+```
+
 #### 조금 더 복잡한 예시: join과 집계가 함께 들어가는 경우
 
 예를 들어 부서별 평균 연봉보다 높은 직원만 보고 싶다고 해봅시다.
@@ -151,6 +161,7 @@ FROM diagnosis_labeled;
 
 ```sql
 WITH employee_base AS (
+    -- 1. 직원과 부서를 join한다.
     SELECT
         e.employee_id,
         e.employee_name,
@@ -162,6 +173,7 @@ WITH employee_base AS (
         ON e.department_id = d.department_id
 ),
 department_salary_avg AS (
+    -- 2. 부서별 평균 연봉을 계산한다.
     SELECT
         department_id,
         AVG(salary) AS avg_salary
@@ -169,6 +181,7 @@ department_salary_avg AS (
     GROUP BY department_id
 ),
 employee_with_avg AS (
+    -- 3. 직원 데이터에 부서 평균 연봉을 다시 붙인다.
     SELECT
         eb.employee_id,
         eb.employee_name,
@@ -179,6 +192,7 @@ employee_with_avg AS (
     JOIN department_salary_avg dsa
         ON eb.department_id = dsa.department_id
 )
+-- 4. 부서 평균보다 높은 직원만 남긴다.
 SELECT
     employee_name,
     department_name,
@@ -199,15 +213,26 @@ ORDER BY department_name, salary DESC;
 `원본 정리 -> 조인 -> 중간 집계 -> 최종 결과` 같은 흐름을  
 사람이 읽기 쉬운 단계로 펼쳐놓는 데 강합니다.
 
+예상 실행 결과 예시:
+
+```text
+employee_name | department_name | salary | avg_salary
+Kim           | Engineering     | 7200   | 6500
+Lee           | Engineering     | 6800   | 6500
+Park          | Marketing       | 5100   | 4800
+```
+
 같은 로직을 서브쿼리만으로도 만들 수는 있습니다.
 
 ```sql
+-- 4. 부서 평균보다 높은 직원만 남긴다.
 SELECT
     employee_name,
     department_name,
     salary,
     avg_salary
 FROM (
+    -- 3. 직원 데이터에 부서 평균 연봉을 다시 붙인다.
     SELECT
         eb.employee_id,
         eb.employee_name,
@@ -215,6 +240,7 @@ FROM (
         eb.salary,
         dsa.avg_salary
     FROM (
+        -- 1. 직원과 부서를 join한다.
         SELECT
             e.employee_id,
             e.employee_name,
@@ -226,10 +252,12 @@ FROM (
             ON e.department_id = d.department_id
     ) eb
     JOIN (
+        -- 2. 부서별 평균 연봉을 계산한다.
         SELECT
             department_id,
             AVG(salary) AS avg_salary
         FROM (
+            -- 1. 평균 계산용으로 다시 직원과 부서를 join한다.
             SELECT
                 e.department_id,
                 e.salary
@@ -316,6 +344,18 @@ WHERE bmi_rank <= 3;
 두 번째 쿼리는  
 `순위를 먼저 만든다 -> 그중 상위 3개만 고른다`는 흐름이 더 잘 드러납니다.
 
+두 쿼리 모두 결과는 대략 이렇게 나옵니다.
+
+```text
+diagnosis | bmi  | bmi_rank
+0         | 34.2 | 1
+0         | 33.8 | 2
+0         | 33.1 | 3
+1         | 36.4 | 1
+1         | 35.9 | 2
+1         | 35.2 | 3
+```
+
 정리하면,
 
 - 작고 단순한 쿼리에서는 서브쿼리로도 충분하고
@@ -326,7 +366,17 @@ WHERE bmi_rank <= 3;
 ### 4. Window Function은 왜 쓰는가?
 
 window function은 데이터를 그룹으로 나누거나 정렬하되,  
-각 행을 없애지 않고 순위, 평균, 비교값을 붙이는 함수입니다.
+**각 행을 없애지 않고** 순위, 평균, 비교값을 붙이는 함수입니다.
+
+이때 핵심은 "window"라는 말 그대로  
+**어떤 범위를 기준으로 계산할지 정하고, 그 범위 안에서 행과 행의 관계를 본다**는 점입니다.
+
+예를 들어 window function은 다음 같은 질문에 잘 맞습니다.
+
+- 내가 속한 그룹 안에서 몇 등인가?
+- 내 값이 그룹 평균보다 높은가?
+- 바로 이전 행과 비교하면 얼마나 달라졌는가?
+- 현재 행까지의 누적합은 얼마인가?
 
 즉,
 
@@ -336,16 +386,65 @@ window function은 데이터를 그룹으로 나누거나 정렬하되,
 #### window function 기본 문법
 
 ```sql
-함수명() OVER (
-    PARTITION BY 그룹기준
-    ORDER BY 정렬기준
-)
+SELECT
+    column_name,
+    window_function(arg) OVER (
+        PARTITION BY partition_col
+        ORDER BY order_col
+        ROWS/RANGE BETWEEN ...
+    ) AS alias
+FROM table_name;
 ```
 
-모든 window function에 `PARTITION BY`와 `ORDER BY`가 항상 둘 다 필요한 것은 아닙니다.
+여기서 각 요소는 대략 이런 의미를 가집니다.
+
+- `PARTITION BY`: 어떤 그룹 안에서 계산할지 정합니다.
+- `ORDER BY`: 그 그룹 안에서 어떤 순서로 볼지 정합니다.
+- `ROWS / RANGE BETWEEN ...`: 현재 행을 기준으로 어느 범위까지 함께 계산할지 정합니다. 이를 window frame이라고 부릅니다.
+
+모든 window function에 `PARTITION BY`, `ORDER BY`, `ROWS / RANGE`가 항상 다 필요한 것은 아닙니다.
 
 - 전체 기준으로 계산하고 싶으면 `PARTITION BY`를 생략할 수 있습니다.
 - 순위처럼 순서가 중요할 때는 `ORDER BY`가 자주 필요합니다.
+- 누적합, 이동평균처럼 "현재 행 기준 앞뒤 몇 행까지 볼지"가 중요할 때는 frame 지정이 유용합니다.
+
+#### window function 타입
+
+이번 세션에서는 아래 정도만 구분해도 충분합니다.
+
+#### 1) Aggregate Window Functions
+
+- `SUM()`, `AVG()`, `COUNT()`, `MIN()`, `MAX()` 같은 집계 함수를 window 위에서 사용합니다.
+- 요약 행으로 줄이지 않고, 각 행에 그룹 평균이나 누적합을 붙일 때 많이 씁니다.
+
+예:
+
+- 그룹 평균 BMI
+- 주차별 누적 매출
+- 최근 몇 행 기준 이동평균
+
+#### 2) Ranking Window Functions
+
+- `ROW_NUMBER()`: 각 행에 고유한 순번을 붙입니다.
+- `RANK()`: 동점이면 같은 순위를 주고, 다음 순위는 건너뜁니다.
+- `DENSE_RANK()`: 동점이면 같은 순위를 주되, 다음 순위를 건너뛰지 않습니다.
+- `NTILE(n)`: 행들을 순서대로 `n`개 구간으로 나눕니다.
+
+예:
+
+- BMI 높은 순으로 순위 매기기
+- 장르별 매출 상위 3개 보기
+- 고객을 매출 기준 상위 4분위로 나누기
+
+#### 3) Value / Analytic Functions
+
+- `LAG()` / `LEAD()`: 이전 행이나 다음 행 값을 가져옵니다.
+- `FIRST_VALUE()` / `LAST_VALUE()`: 현재 window frame 안의 첫 값이나 마지막 값을 가져옵니다.
+
+예:
+
+- 이전 주 대비 시청 시간 변화 보기
+- 바로 전 행과 현재 행 차이 계산하기
 
 #### 간단 예시 1: 전체 BMI 순위
 
@@ -362,6 +461,16 @@ FROM cancer_data;
 이 쿼리는 행 수를 줄이지 않고,  
 각 환자 행에 전체 기준 BMI 순위를 붙입니다.
 
+예상 실행 결과 예시:
+
+```text
+age | bmi  | bmi_rank_all
+52  | 36.4 | 1
+47  | 35.9 | 2
+61  | 35.2 | 3
+34  | 34.8 | 4
+```
+
 #### 간단 예시 2: 진단 여부별 평균 BMI 비교
 
 ```sql
@@ -377,6 +486,40 @@ FROM cancer_data;
 
 이 쿼리는 각 행을 유지한 채,  
 내가 속한 `diagnosis` 그룹의 평균 BMI를 같이 보여줍니다.
+
+예상 실행 결과 예시:
+
+```text
+diagnosis | age | bmi  | group_avg_bmi
+0         | 34  | 24.1 | 27.10
+0         | 58  | 29.3 | 27.10
+1         | 47  | 31.5 | 29.84
+1         | 63  | 28.7 | 29.84
+```
+
+#### 간단 예시 3: 이전 행과 비교하기
+
+```sql
+SELECT
+    week,
+    weekly_hours_viewed,
+    LAG(weekly_hours_viewed) OVER (
+        ORDER BY week
+    ) AS prev_week_hours
+FROM netflix_all_weeks_global;
+```
+
+이런 형태는 "이전 행과 현재 행의 관계"를 보고 싶을 때 자주 씁니다.
+
+예상 실행 결과 예시:
+
+```text
+week       | weekly_hours_viewed | prev_week_hours
+2025-01-05 | 12000000            | null
+2025-01-12 | 13500000            | 12000000
+2025-01-19 | 12800000            | 13500000
+2025-01-26 | 14200000            | 12800000
+```
 
 즉 "그룹 평균 BMI가 얼마냐"만 보고 싶으면 `GROUP BY`가 더 자연스럽고,  
 "각 환자의 BMI가 자기 그룹 평균보다 높은가"까지 같이 보고 싶으면 window function이 더 자연스럽습니다.
@@ -451,14 +594,8 @@ diagnosis | age | bmi  | group_avg_bmi
 
 ### 6. 기존 집계 중심 사고에서 window function이 들어오면 무엇이 달라질까?
 
-기존에는 보통 이런 흐름에 익숙합니다.
-
-- 먼저 그룹으로 묶고
-- 집계하고
-- 정렬하고
-- 조건을 걸어서 결과를 줄이는 방식
-
-이건 "그룹별 한 줄 요약표"를 만드는 사고입니다.
+기존에는 보통 `GROUP BY -> HAVING -> ORDER BY` 흐름으로  
+"그룹별 한 줄 요약표"를 만드는 사고에 익숙합니다.
 
 그런데 window function이 들어오면 질문 자체가 달라집니다.
 
@@ -484,18 +621,22 @@ diagnosis | age | bmi  | group_avg_bmi
 서브쿼리로도 비슷한 결과를 만들 수 있는데, intermediate 단계를 나눠 표현하는 데 어떤 장점이 있을까요?
 
 ### Q2.
+`WITH` 절과 window function은 둘 다 쿼리를 더 풍부하게 만들지만, 푸는 문제는 다릅니다.  
+각각 무엇을 위한 도구라고 보면 좋을까요?
+
+### Q3.
 `GROUP BY`와 `PARTITION BY`는 둘 다 비슷하게 보이지만 결과는 다릅니다.  
 어떤 상황에서 각각 더 자연스러울까요?
 
-### Q3.
+### Q4.
 기존에는 `GROUP BY -> HAVING -> ORDER BY` 식의 사고가 익숙했는데,  
 window function이 들어오면 어떤 종류의 질문을 더 할 수 있을까요?
 
-### Q4.
+### Q5.
 "그룹별 평균 BMI"를 보고 싶을 때 왜 어떤 경우에는 `GROUP BY`가 맞고,  
 어떤 경우에는 `AVG(...) OVER (...)`가 더 맞을까요?
 
-### Q5.
+### Q6.
 SQL에서 intermediate table과 business table을 단계적으로 만든 뒤,  
 이 결과를 pandas와 연결한다면 어떤 점이 좋아질까요?
 
