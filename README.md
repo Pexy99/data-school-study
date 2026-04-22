@@ -26,7 +26,7 @@ Python 가상환경을 만든 뒤 필요한 라이브러리를 설치합니다.
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 Windows PowerShell에서는 가상환경 활성화 명령이 다릅니다.
@@ -35,7 +35,7 @@ Windows PowerShell에서는 가상환경 활성화 명령이 다릅니다.
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ## Jupyter 실행
