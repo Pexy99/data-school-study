@@ -697,3 +697,14 @@ SQL에서 intermediate table과 business table을 단계적으로 만든 뒤,
 - `GROUP BY`와 `PARTITION BY`의 차이가 조금 더 선명해졌는가?
 - 기존 집계 중심 사고에서 window function을 통해 어떤 질문이 추가로 가능해지는지 보였는가?
 - SQL만으로도 `정제 -> intermediate -> business-ready` 흐름을 만들 수 있다는 점이 보였는가?
+
+---
+
+## 참고 링크
+
+- PostgreSQL 공식 문서: `WITH` Queries (Common Table Expressions)
+  https://www.postgresql.org/docs/current/queries-with.html
+- PostgreSQL 공식 튜토리얼: Window Functions
+  https://www.postgresql.org/docs/current/tutorial-window.html
+- PostgreSQL 공식 문서: Window Functions Reference
+  https://www.postgresql.org/docs/current/functions-window.html

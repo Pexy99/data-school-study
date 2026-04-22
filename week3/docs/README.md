@@ -38,7 +38,7 @@ Week 3는 실습에 필요한 CSV가 이미 `week3/data/`에 들어 있습니다
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 Windows PowerShell에서는 가상환경 활성화 명령이 다릅니다.
@@ -47,7 +47,7 @@ Windows PowerShell에서는 가상환경 활성화 명령이 다릅니다.
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 추가로 로컬에 PostgreSQL 서버가 실행 중이어야 합니다.
