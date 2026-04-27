@@ -35,13 +35,12 @@
 -- 이 파일의 흐름
 -- 0. 분석용 테이블 구조 확인과 정제 테이블 만들기
 -- 1. grain 확인: 한 행이 무엇을 의미하는지 보기
--- 2. SELECT로 기본 feature 만들어보기
--- 3. WITH로 feature intermediate 분리하기
--- 4. GROUP BY로 장르 business table 만들기
--- 5. LAG()로 이전 주 대비 변화량 feature 만들기
--- 6. 급상승 feature 만들기
--- 7. 롱런 콘텐츠와 단기 인기 콘텐츠 비교하기
--- 8. model input table 후보 만들기
+-- 2. Q1: 글로벌 Top10에 자주 등장하는 장르 찾기
+-- 3. Q2: 계절별 선호 장르 찾기
+-- 4. Q3~Q4용 콘텐츠-주차 intermediate 만들기
+-- 5. 급상승 feature 만들기
+-- 6. 롱런 콘텐츠와 단기 인기 콘텐츠 비교하기
+-- 7. model input table 후보 만들기
 -- =========================================================
 
 
@@ -120,21 +119,25 @@ SELECT
     weekly_rank_num,
     weekly_hours_viewed_num,
     cumulative_weeks_in_top_10_num,
-    NULLIF(type_clean, 'nan') AS type_clean,
-    NULLIF(genre, 'nan') AS genre
+    -- TODO: 'nan' 문자열을 SQL NULL처럼 다루기 위해 NULLIF를 사용한다.
+    TODO AS type_clean,
+    TODO AS genre
 FROM netflix_mart_global
 WHERE title_clean IS NOT NULL
   AND show_title IS NOT NULL
   AND title_clean NOT LIKE '%�%'
   AND show_title NOT LIKE '%�%'
-  AND NULLIF(type_clean, 'nan') IS NOT NULL
-  AND NULLIF(genre, 'nan') IS NOT NULL;
+  -- TODO: type_clean, genre의 'nan' 문자열을 제외한다.
+  AND TODO IS NOT NULL
+  AND TODO IS NOT NULL;
 
 -- 확인용: 정제 후 분석 대상 행이 얼마나 남았는지 본다.
 SELECT
     COUNT(*) AS clean_rows,
-    COUNT(DISTINCT title_clean) AS clean_title_count,
-    COUNT(DISTINCT genre) AS clean_genre_count
+    -- TODO: DISTINCT로 고유 콘텐츠 수를 센다.
+    TODO AS clean_title_count,
+    -- TODO: DISTINCT로 고유 장르 수를 센다.
+    TODO AS clean_genre_count
 FROM netflix_mart_clean;
 
 
@@ -170,7 +173,8 @@ SELECT
     week_date,
     title_clean,
     COUNT(*) AS row_count,
-    COUNT(DISTINCT genre) AS genre_count
+    -- TODO: 같은 콘텐츠-주차에 붙은 고유 장르 수를 센다.
+    TODO AS genre_count
 FROM netflix_mart_clean
 GROUP BY week_date, title_clean
 HAVING COUNT(*) > 1
@@ -186,131 +190,26 @@ LIMIT 20;
 -- =========================================================
 -- [예제 2]
 -- 무엇을 하려는가?
--- -> SELECT에서 바로 기본 feature를 만들어본다.
---
--- 왜 이 예제를 하나?
--- -> WITH로 길게 나누기 전에,
---    CASE WHEN으로 파생 컬럼을 만드는 감각을 먼저 잡기 위함이다.
---
--- 여기서 배우는 핵심
--- -> feature는 거창한 것이 아니라,
---    원본 컬럼을 분석 목적에 맞게 다시 해석한 컬럼이다.
--- -> 다만 이 테이블은 장르 long format이므로,
---    콘텐츠 단위 feature로 해석하면 같은 값이 장르 수만큼 반복될 수 있다.
--- =========================================================
-SELECT
-    week_date,
-    show_title,
-    weekly_rank_num,
-    weekly_hours_viewed_num,
-    cumulative_weeks_in_top_10_num,
-    -- TODO: weekly_rank_num으로 순위 구간을 만든다.
-    --       1~3위는 'top_3', 4~7위는 'top_4_to_7', 8~10위는 'top_8_to_10'
-    TODO AS rank_bucket,
-    -- TODO: cumulative_weeks_in_top_10_num이 4 이상이면 1, 아니면 0으로 롱런 여부를 표시한다.
-    TODO AS long_run_flag,
-    -- TODO: season을 정렬 가능한 숫자로 바꾼다. spring=1, summer=2, fall=3, winter=4
-    TODO AS season_order
-FROM netflix_mart_clean
-ORDER BY week_date DESC, weekly_rank_num
-LIMIT 20;
-
--- 완성되면 대략 이런 결과를 기대한다:
--- week_date  | show_title              | weekly_rank_num | rank_bucket | long_run_flag | season_order
--- 2023-12-17 | The Crown               | 2               | top_3       | 1             | 4
-
-
-
--- =========================================================
--- [예제 3]
--- 무엇을 하려는가?
--- -> 예제 2에서 만든 기본 feature를 WITH로 분리한다.
---
--- 왜 WITH를 쓰는가?
--- -> rank_bucket, long_run_flag, season_order 같은 feature를
---    뒤의 집계나 window 계산에서 다시 쓰기 위함이다.
---
--- 여기서 배우는 핵심
--- -> WITH는 feature intermediate에 이름을 붙여
---    다음 단계에서 읽기 쉽게 재사용하는 방법이다.
--- -> 예제 2에서 만든 feature를 WITH 안으로 옮기면,
---    이후 SELECT에서는 feature 이름만 보고 사용할 수 있다.
--- -> 예제 2와 마찬가지로 이 intermediate의 grain은
---    week_date + title_clean + genre에 가깝다.
--- =========================================================
-WITH content_features AS (
-    SELECT
-        week_date,
-        season,
-        title_clean,
-        show_title,
-        weekly_rank_num,
-        weekly_hours_viewed_num,
-        cumulative_weeks_in_top_10_num,
-        type_clean,
-        genre,
-        CASE
-            WHEN weekly_rank_num <= 3 THEN 'top_3'
-            WHEN weekly_rank_num <= 7 THEN 'top_4_to_7'
-            ELSE 'top_8_to_10'
-        END AS rank_bucket,
-        CASE
-            WHEN cumulative_weeks_in_top_10_num >= 4 THEN 1
-            ELSE 0
-        END AS long_run_flag,
-        CASE season
-            WHEN 'spring' THEN 1
-            WHEN 'summer' THEN 2
-            WHEN 'fall' THEN 3
-            WHEN 'winter' THEN 4
-        END AS season_order
-    FROM netflix_mart_clean
-)
-SELECT
-    week_date,
-    show_title,
-    genre,
-    rank_bucket,
-    long_run_flag,
-    season_order
-FROM content_features
-ORDER BY week_date DESC, weekly_rank_num
-LIMIT 20;
-
--- 완성되면 대략 이런 결과를 기대한다:
--- week_date  | show_title             | genre     | rank_bucket | long_run_flag | season_order
--- 2023-12-17 | The Crown              | TV Dramas | top_3       | 1             | 4
--- 2023-12-17 | Dr. Seuss' The Grinch  | Comedies  | top_8_to_10 | 1             | 4
-
-
-
--- =========================================================
--- [예제 4]
--- 무엇을 하려는가?
--- -> 글로벌 Top10에 자주 등장하는 장르를 business table로 만든다.
+-- -> Q1. 글로벌 Top10에 자주 등장하는 콘텐츠의 장르를 찾는다.
 --
 -- 왜 이 예제를 하나?
 -- -> "어떤 장르가 글로벌에서 잘 먹히는가?"는
 --    GROUP BY로 바로 답하기 좋은 설명형 분석 질문이다.
 --
 -- 여기서 배우는 핵심
--- -> feature table은 행 단위 정보를 보강하는 데 가깝고,
---    business table은 질문에 바로 답하기 좋은 요약 결과에 가깝다.
 -- -> long format 덕분에 GROUP BY genre가 쉬워졌다.
 -- -> 대신 COUNT(*)는 고유 콘텐츠 수가 아니라 장르별 Top10 등장 행 수다.
--- -> Q1과 Q2의 기본 장르/계절 장르 집계에는 이 구조가 잘 맞는다.
--- -> 단, Q2의 "급상승"까지 보려면 기간별 변화량을 별도로 정의해야 한다.
+-- -> COUNT(DISTINCT title_clean)는 장르별 고유 콘텐츠 수를 보여준다.
 -- =========================================================
--- 1. 먼저 장르별 등장 횟수와 평균 성과를 요약한다.
 SELECT
     genre,
-    -- TODO: 장르별 Top10 등장 행 수를 계산한다. long format이므로 COUNT(*)는 콘텐츠-장르 행 수다.
+    -- TODO: COUNT(*)로 장르별 Top10 등장 행 수를 센다.
     TODO AS top10_row_count,
-    -- TODO: 장르별 고유 콘텐츠 수를 계산한다. 같은 콘텐츠의 여러 주차/장르 중복을 줄이기 위해 DISTINCT title_clean을 쓴다.
+    -- TODO: COUNT(DISTINCT title_clean)로 장르별 고유 콘텐츠 수를 센다.
     TODO AS title_count,
-    -- TODO: 장르별 평균 순위를 계산한다. weekly_rank_num의 평균을 소수점 둘째 자리까지 반올림한다.
+    -- TODO: 평균 순위를 소수점 둘째 자리까지 반올림한다.
     TODO AS avg_rank,
-    -- TODO: 장르별 평균 시청 시간을 계산한다. weekly_hours_viewed_num의 평균을 정수로 반올림한다.
+    -- TODO: 평균 시청 시간을 정수로 반올림한다.
     TODO AS avg_hours_viewed
 FROM netflix_mart_clean
 -- TODO: genre 기준으로 묶는다.
@@ -322,175 +221,196 @@ LIMIT 20;
 -- genre  | top10_row_count | title_count | avg_rank | avg_hours_viewed
 -- Drama  | 1200            | 320         | 5.42     | 15000000
 
--- 2. 장르별 + 계절별로 보면 계절성 질문에 더 가까워진다.
+
+
+-- =========================================================
+-- [예제 3]
+-- 무엇을 하려는가?
+-- -> Q2. 계절별로 선호하는 장르를 찾는다.
+--
+-- 왜 이 예제를 하나?
+-- -> "계절별로 어떤 장르가 많이 등장하고 성과가 좋은가?"는
+--    season + genre 단위 business table로 답하기 좋다.
+--
+-- 여기서 배우는 핵심
+-- -> 한 행은 season + genre다.
+-- -> season 안에서 장르별 등장 횟수와 성과를 비교한다.
+-- =========================================================
 SELECT
     season,
     genre,
-    -- TODO: season + genre별 Top10 등장 행 수를 계산한다. COUNT(*)를 사용한다.
-    TODO AS top10_row_count,
-    -- TODO: season + genre별 평균 시청 시간을 계산한다. weekly_hours_viewed_num의 평균을 정수로 반올림한다.
-    TODO AS avg_hours_viewed
+    COUNT(*) AS top10_row_count,
+    -- TODO: season + genre 안에서 고유 콘텐츠 수를 센다.
+    TODO AS title_count,
+    ROUND(AVG(weekly_rank_num), 2) AS avg_rank,
+    ROUND(AVG(weekly_hours_viewed_num), 0) AS avg_hours_viewed,
+    -- TODO: season별로 장르 순위를 매긴다. RANK()와 PARTITION BY season을 사용한다.
+    TODO AS genre_rank_in_season
 FROM netflix_mart_clean
--- TODO: season, genre 기준으로 묶는다.
-GROUP BY TODO
-ORDER BY season, top10_row_count DESC
+GROUP BY season, genre
+ORDER BY season, genre_rank_in_season
 LIMIT 40;
 
 -- 완성되면 대략 이런 결과를 기대한다:
--- season | genre                  | top10_row_count | avg_hours_viewed
--- fall   | TV Dramas              | 171             | 38674269
--- winter | International TV Shows | 105             | 21600000
+-- season | genre     | top10_row_count | title_count | avg_rank | avg_hours_viewed | genre_rank_in_season
+-- fall   | TV Dramas | 171             | 39          | 5.27     | 38674269         | 1
 
 
 
 -- =========================================================
--- [예제 5]
+-- [예제 4]
 -- 무엇을 하려는가?
--- -> Q3~Q4를 위해 콘텐츠-주차 단위 중간 테이블을 새로 만든다.
+-- -> Q3~Q4를 위해 raw 성과 테이블과 메타데이터 테이블을 조인해서
+--    콘텐츠-주차 단위 중간 테이블을 새로 만든다.
 --
 -- 왜 이 예제가 중요한가?
--- -> netflix_mart_clean은 장르 long format이라서
---    콘텐츠 단위로 LAG(), SUM()을 하면 장르 수만큼 같은 성과가 반복될 수 있다.
--- -> Q3 급상승과 Q4 롱런 비교는 콘텐츠 성과 흐름이 핵심이므로
---    week_date + title_clean grain의 중간 테이블이 더 자연스럽다.
+-- -> netflix_mart_clean은 이미 장르 분석을 위해 펼쳐진 결과물이다.
+-- -> Q3 급상승과 Q4 롱런 비교처럼 콘텐츠 성과 흐름이 핵심인 질문은
+--    mart를 다시 접기보다 원천 성과 테이블에서 새 intermediate를 만드는 편이 맞다.
 --
 -- 여기서 배우는 핵심
 -- -> 질문마다 맞는 grain을 먼저 정하고,
---    그 grain에 맞는 intermediate table을 만든 뒤 feature를 계산한다.
+--    그 grain에 맞게 raw/metadata를 조인해서 intermediate table을 만든다.
 -- =========================================================
 DROP TABLE IF EXISTS netflix_content_week_clean;
 
 CREATE TEMP TABLE netflix_content_week_clean AS
+WITH weekly_source AS (
+    SELECT
+        week AS week_date,
+        LOWER(TRIM(show_title)) AS title_clean,
+        show_title,
+        weekly_rank AS weekly_rank_num,
+        weekly_hours_viewed AS weekly_hours_viewed_num,
+        cumulative_weeks_in_top_10 AS cumulative_weeks_in_top_10_num
+    FROM netflix_all_weeks_global
+    WHERE show_title IS NOT NULL
+      AND show_title NOT LIKE '%�%'
+),
+content_week_base AS (
+    SELECT
+        week_date,
+        title_clean,
+        MIN(show_title) AS show_title,
+        MIN(weekly_rank_num) AS weekly_rank_num,
+        SUM(DISTINCT weekly_hours_viewed_num) AS weekly_hours_viewed_num,
+        MAX(cumulative_weeks_in_top_10_num) AS cumulative_weeks_in_top_10_num
+    FROM weekly_source
+    GROUP BY week_date, title_clean
+),
+title_features AS (
+    SELECT
+        LOWER(TRIM(title)) AS title_clean,
+        MIN(NULLIF(type, 'nan')) AS type_clean
+    FROM netflix_titles
+    WHERE title IS NOT NULL
+      AND title NOT LIKE '%�%'
+    GROUP BY LOWER(TRIM(title))
+)
 SELECT
-    week_date,
-    MIN(month_num) AS month_num,
-    MIN(season) AS season,
-    title_clean,
-    MIN(show_title) AS show_title,
-    MIN(weekly_rank_num) AS weekly_rank_num,
-    SUM(DISTINCT weekly_hours_viewed_num) AS weekly_hours_viewed_num,
-    MAX(cumulative_weeks_in_top_10_num) AS cumulative_weeks_in_top_10_num,
-    MIN(type_clean) AS type_clean
-FROM netflix_mart_clean
-GROUP BY week_date, title_clean;
+    cwb.week_date,
+    cwb.title_clean,
+    cwb.show_title,
+    tf.type_clean,
+    cwb.weekly_rank_num,
+    cwb.weekly_hours_viewed_num,
+    cwb.cumulative_weeks_in_top_10_num
+FROM content_week_base AS cwb
+JOIN title_features AS tf
+    ON cwb.title_clean = tf.title_clean;
+
+DROP TABLE IF EXISTS netflix_title_genre_bridge;
+
+CREATE TEMP TABLE netflix_title_genre_bridge AS
+SELECT DISTINCT
+    LOWER(TRIM(nt.title)) AS title_clean,
+    TRIM(genre_value) AS genre
+FROM netflix_titles AS nt
+CROSS JOIN LATERAL UNNEST(STRING_TO_ARRAY(nt.listed_in, ',')) AS genre_value
+WHERE nt.title IS NOT NULL
+  AND nt.title NOT LIKE '%�%'
+  AND nt.listed_in IS NOT NULL
+  AND TRIM(genre_value) <> '';
 
 -- 확인용: 콘텐츠-주차 단위로 중복이 사라졌는지 확인한다.
 -- duplicate_content_week_rows가 0이면 week_date + title_clean grain으로 볼 수 있다.
--- 같은 콘텐츠가 같은 주에 여러 성과 행을 가질 수 있어서,
--- 가장 좋은 순위는 MIN(rank), 시청 시간은 중복 제거 후 SUM으로 접었다.
+-- 같은 콘텐츠가 같은 주에 여러 성과 행을 가질 수 있어서 raw 성과를 먼저 요약했다.
 SELECT
     COUNT(*) AS content_week_rows,
     COUNT(DISTINCT (week_date, title_clean)) AS distinct_content_week_rows,
     COUNT(*) - COUNT(DISTINCT (week_date, title_clean)) AS duplicate_content_week_rows
 FROM netflix_content_week_clean;
 
--- 콘텐츠별 주차 순서를 확인한다.
+-- 확인용: raw 성과 테이블에서 온 content_week와
+-- netflix_titles에서 온 메타데이터와 조인된 분석 대상 행 수를 본다.
+SELECT
+    COUNT(*) AS content_week_rows,
+    COUNT(*) FILTER (WHERE type_clean IS NOT NULL) AS matched_type_rows
+FROM netflix_content_week_clean;
+
+-- 확인용: 장르 bridge도 title_clean + genre 단위로 만들어졌는지 본다.
 SELECT
     title_clean,
-    week_date,
-    weekly_rank_num,
-    weekly_hours_viewed_num,
-    -- TODO: title_clean별로 week_date 오름차순 주차 번호를 붙인다. ROW_NUMBER()를 사용한다.
-    TODO AS week_row_num
-FROM netflix_content_week_clean
-ORDER BY title_clean, week_date
+    genre
+FROM netflix_title_genre_bridge
+ORDER BY title_clean, genre
 LIMIT 40;
 
 -- 완성되면 대략 이런 결과를 기대한다:
--- title_clean | week_date  | weekly_rank_num | weekly_hours_viewed_num | week_row_num
--- example     | 2023-01-08 | 5               | 8000000                 | 1
--- example     | 2023-01-15 | 2               | 14000000                | 2
-
--- LAG()로 이전 주 순위와 이전 주 시청 시간을 붙인다.
-WITH weekly_performance AS (
-    SELECT
-        week_date,
-        title_clean,
-        show_title,
-        type_clean,
-        weekly_rank_num,
-        weekly_hours_viewed_num,
-        -- TODO: title_clean 기준으로 week_date 이전 행의 weekly_rank_num을 가져온다. LAG()를 사용한다.
-        TODO AS prev_week_rank,
-        -- TODO: title_clean 기준으로 week_date 이전 행의 weekly_hours_viewed_num을 가져온다. LAG()를 사용한다.
-        TODO AS prev_week_hours_viewed
-    FROM netflix_content_week_clean
-)
-SELECT
-    week_date,
-    show_title,
-    weekly_rank_num,
-    prev_week_rank,
-    weekly_hours_viewed_num,
-    prev_week_hours_viewed
-FROM weekly_performance
-ORDER BY title_clean, week_date
-LIMIT 40;
-
--- 완성되면 대략 이런 결과를 기대한다:
--- week_date  | show_title | weekly_rank_num | prev_week_rank | weekly_hours_viewed_num | prev_week_hours_viewed
--- 2023-01-08 | Example    | 5               |                | 8000000                 |
--- 2023-01-15 | Example    | 2               | 5              | 14000000                | 8000000
+-- title_clean | genre
+-- the crown   | British TV Shows
 
 
 
 -- =========================================================
--- [예제 6]
+-- [예제 5]
 -- 무엇을 하려는가?
--- -> 이전 주 대비 변화량과 신규 진입 여부를 feature로 만든다.
+-- -> 이전 주 대비 순위 변화량과 신규 진입 여부를 feature로 만든다.
 --
 -- 왜 이 예제를 하나?
 -- -> "급상승의 기준은 무엇인가?"라는 질문을
---    SQL feature로 바꾸는 대표 예시이기 때문이다.
+--    ranking feature로 바꾸는 대표 예시이기 때문이다.
 --
 -- 여기서 배우는 핵심
 -- -> WITH로 이전 주 값을 먼저 붙인 뒤,
 --    바깥 SELECT에서 변화량과 flag를 계산하면 쿼리가 읽기 쉬워진다.
 -- -> 이때 PARTITION BY는 title_clean만 사용해서 콘텐츠 흐름을 본다.
+-- -> 이번 세션에서는 시청 시간 변화는 빼고, 순위 변화에 집중한다.
 -- =========================================================
 WITH weekly_performance AS (
     SELECT
         week_date,
-        season,
         title_clean,
         show_title,
         type_clean,
         weekly_rank_num,
-        weekly_hours_viewed_num,
         cumulative_weeks_in_top_10_num,
-        LAG(weekly_rank_num) OVER (
-            PARTITION BY title_clean
-            ORDER BY week_date
-        ) AS prev_week_rank,
-        LAG(weekly_hours_viewed_num) OVER (
-            PARTITION BY title_clean
-            ORDER BY week_date
-        ) AS prev_week_hours_viewed
+        -- TODO: LAG()로 같은 title_clean의 이전 주 순위를 가져온다.
+        TODO AS prev_week_rank,
+        -- TODO: ROW_NUMBER()로 같은 title_clean 안에서 주차 순서를 만든다.
+        TODO AS week_row_num
     FROM netflix_content_week_clean
 )
 SELECT
     week_date,
+    title_clean,
     show_title,
+    type_clean,
     weekly_rank_num,
     prev_week_rank,
-    -- TODO: rank_change를 계산한다. prev_week_rank - weekly_rank_num이며, 양수면 순위 상승이다.
+    -- TODO: 이전 순위 - 현재 순위로 rank_change를 만든다. 양수면 순위 상승이다.
     TODO AS rank_change,
-    weekly_hours_viewed_num,
-    prev_week_hours_viewed,
-    -- TODO: hours_change를 계산한다. weekly_hours_viewed_num - prev_week_hours_viewed
-    TODO AS hours_change,
-    -- TODO: hours_growth_rate를 계산한다. hours_change / prev_week_hours_viewed이며, 0 나누기 방지를 위해 NULLIF를 쓴다.
-    TODO AS hours_growth_rate,
-    -- TODO: prev_week_rank가 NULL이면 신규 진입 1, 아니면 0으로 표시한다.
-    TODO AS is_new_entry
+    -- TODO: 이전 주 순위가 없으면 신규 진입 1, 아니면 0으로 표시한다.
+    TODO AS is_new_entry,
+    week_row_num
 FROM weekly_performance
 ORDER BY title_clean, week_date
 LIMIT 40;
 
 -- 완성되면 대략 이런 결과를 기대한다:
--- week_date  | show_title | weekly_rank_num | prev_week_rank | rank_change | hours_change | is_new_entry
--- 2023-01-08 | Example    | 5               |                |             |              | 1
--- 2023-01-15 | Example    | 2               | 5              | 3           | 6000000      | 0
+-- week_date  | show_title | weekly_rank_num | prev_week_rank | rank_change | is_new_entry
+-- 2023-01-08 | Example    | 5               |                |             | 1
+-- 2023-01-15 | Example    | 2               | 5              | 3           | 0
 
 -- 참고:
 -- rank_change는 이전 순위 - 현재 순위로 계산했다.
@@ -499,25 +419,17 @@ LIMIT 40;
 
 
 -- =========================================================
--- [예제 7]
+-- [예제 6]
 -- 무엇을 하려는가?
--- -> 롱런 콘텐츠와 단기 인기 콘텐츠를 비교할 수 있는 business table을 만든다.
+-- -> 콘텐츠별 롱런 여부 label을 만든다.
 --
 -- 왜 이 예제를 하나?
--- -> "Top10에 오래 머무는 콘텐츠와 단기 인기 콘텐츠는 무엇이 다른가?"는
---    먼저 콘텐츠 단위로 요약한 뒤 비교해야 하는 질문이다.
+-- -> 향후 예측 문제로 바꾸려면 먼저 무엇을 예측할지 정해야 한다.
+-- -> 여기서는 Top10에 4주 이상 머문 콘텐츠를 롱런 콘텐츠로 본다.
 --
 -- 여기서 배우는 핵심
--- -> 주차별 행을 콘텐츠 단위로 요약하고,
---    그 결과를 다시 그룹별로 비교할 수 있다.
--- -> 장르 비교가 필요하면 콘텐츠 성과 요약 뒤에
---    title_clean + genre bridge를 붙인다.
---
--- 수업 운영
--- -> 1.5시간 수업에서는 이 예제를 전체 실습으로 풀기보다,
---    콘텐츠 단위 요약 흐름을 읽고 일부만 채운다.
+-- -> content-week 행을 title_clean 단위로 요약해서 label을 만든다.
 -- =========================================================
--- 1. 먼저 콘텐츠 단위로 성과를 요약한다.
 WITH content_summary AS (
     SELECT
         title_clean,
@@ -525,11 +437,8 @@ WITH content_summary AS (
         type_clean,
         COUNT(DISTINCT week_date) AS weeks_in_top10,
         MIN(weekly_rank_num) AS best_rank,
-        ROUND(AVG(weekly_rank_num), 2) AS avg_rank,
-        SUM(weekly_hours_viewed_num) AS total_hours_viewed,
-        ROUND(AVG(weekly_hours_viewed_num), 0) AS avg_weekly_hours_viewed,
         MAX(cumulative_weeks_in_top_10_num) AS max_cumulative_weeks,
-        -- TODO: MAX(cumulative_weeks_in_top_10_num)이 4 이상이면 1, 아니면 0으로 롱런 여부를 표시한다.
+        -- TODO: 누적 Top10 유지 주가 4 이상이면 long_run_flag = 1로 표시한다.
         TODO AS long_run_flag
     FROM netflix_content_week_clean
     GROUP BY title_clean, type_clean
@@ -540,69 +449,20 @@ SELECT
     type_clean,
     weeks_in_top10,
     best_rank,
-    avg_rank,
-    total_hours_viewed,
-    avg_weekly_hours_viewed,
     max_cumulative_weeks,
     long_run_flag
 FROM content_summary
-ORDER BY max_cumulative_weeks DESC, total_hours_viewed DESC
+ORDER BY max_cumulative_weeks DESC, best_rank
 LIMIT 30;
 
 -- 완성되면 대략 이런 결과를 기대한다:
--- title_clean     | type_clean | weeks_in_top10 | best_rank | total_hours_viewed | long_run_flag
--- stranger things | TV Show    | 12             | 1         | 1234567890         | 1
-
--- 2. 롱런 여부별로 장르/유형/성과를 비교한다.
-WITH content_summary AS (
-    SELECT
-        title_clean,
-        MIN(show_title) AS show_title,
-        type_clean,
-        COUNT(DISTINCT week_date) AS weeks_in_top10,
-        MIN(weekly_rank_num) AS best_rank,
-        ROUND(AVG(weekly_rank_num), 2) AS avg_rank,
-        SUM(weekly_hours_viewed_num) AS total_hours_viewed,
-        ROUND(AVG(weekly_hours_viewed_num), 0) AS avg_weekly_hours_viewed,
-        MAX(cumulative_weeks_in_top_10_num) AS max_cumulative_weeks,
-        CASE
-            WHEN MAX(cumulative_weeks_in_top_10_num) >= 4 THEN 1
-            ELSE 0
-        END AS long_run_flag
-    FROM netflix_content_week_clean
-    GROUP BY title_clean, type_clean
-),
-content_genre_bridge AS (
-    SELECT DISTINCT
-        title_clean,
-        genre
-    FROM netflix_mart_clean
-)
-SELECT
-    cs.long_run_flag,
-    cs.type_clean,
-    -- TODO: content_genre_bridge에서 가져온 genre를 선택한다.
-    TODO AS genre,
-    COUNT(*) AS content_count,
-    ROUND(AVG(cs.avg_rank), 2) AS avg_of_avg_rank,
-    ROUND(AVG(cs.total_hours_viewed), 0) AS avg_total_hours_viewed,
-    ROUND(AVG(cs.avg_weekly_hours_viewed), 0) AS avg_weekly_hours_viewed
-FROM content_summary AS cs
--- TODO: content_summary와 content_genre_bridge를 title_clean으로 JOIN한다.
-JOIN TODO
-GROUP BY cs.long_run_flag, cs.type_clean, TODO
-ORDER BY long_run_flag DESC, content_count DESC
-LIMIT 30;
-
--- 완성되면 대략 이런 결과를 기대한다:
--- long_run_flag | type_clean | genre     | content_count | avg_of_avg_rank | avg_total_hours_viewed
--- 1             | TV Show    | TV Dramas | 30            | 5.21            | 420000000
--- 0             | Movie      | Comedies  | 45            | 6.10            | 35000000
+-- title_clean     | type_clean | weeks_in_top10 | best_rank | max_cumulative_weeks | long_run_flag
+-- stranger things | TV Show    | 12             | 1         | 12                   | 1
 
 
 
 -- =========================================================
--- [예제 8]
+-- [예제 7]
 -- 무엇을 하려는가?
 -- -> 다음 회차 모델링이나 비교 분석에 넘길 수 있는 model input 후보를 만든다.
 --
@@ -614,95 +474,61 @@ LIMIT 30;
 -- -> model input table은 보통 "무엇을 한 행으로 볼 것인가"를 먼저 정하고,
 --    그 단위에 맞춰 feature를 모은 결과다.
 -- -> 여기서는 week_date + title_clean을 한 행으로 본다.
--- -> genre는 직접 넣지 않는다. 장르가 필요하면
---    content_genre_bridge 같은 별도 테이블을 조인한다.
---
--- 수업 운영
--- -> 예제 8은 직접 채우기보다,
---    앞에서 만든 feature들이 최종 입력 테이블로 합쳐지는 모습을 확인한다.
+-- -> 장르는 1:N 관계이므로 bridge를 조인해서 붙인다.
+-- -> 이번 세션에서는 ranking feature 중심으로 최소 컬럼만 남긴다.
 -- =========================================================
 WITH weekly_performance AS (
     SELECT
         week_date,
-        season,
         title_clean,
         show_title,
         type_clean,
         weekly_rank_num,
-        weekly_hours_viewed_num,
         cumulative_weeks_in_top_10_num,
-        LAG(weekly_rank_num) OVER (
-            PARTITION BY title_clean
-            ORDER BY week_date
-        ) AS prev_week_rank,
-        LAG(weekly_hours_viewed_num) OVER (
-            PARTITION BY title_clean
-            ORDER BY week_date
-        ) AS prev_week_hours_viewed
+        -- TODO: LAG()로 같은 title_clean의 이전 주 순위를 가져온다.
+        TODO AS prev_week_rank,
+        -- TODO: ROW_NUMBER()로 같은 title_clean 안에서 주차 순서를 만든다.
+        TODO AS week_row_num
     FROM netflix_content_week_clean
 ),
 weekly_features AS (
     SELECT
         week_date,
-        season,
         title_clean,
         show_title,
         type_clean,
         weekly_rank_num,
-        weekly_hours_viewed_num,
         cumulative_weeks_in_top_10_num,
         prev_week_rank,
-        prev_week_hours_viewed,
-        prev_week_rank - weekly_rank_num AS rank_change,
-        weekly_hours_viewed_num - prev_week_hours_viewed AS hours_change,
-        ROUND(
-            (weekly_hours_viewed_num - prev_week_hours_viewed)::numeric
-            / NULLIF(prev_week_hours_viewed, 0),
-            3
-        ) AS hours_growth_rate,
-        CASE
-            WHEN prev_week_rank IS NULL THEN 1
-            ELSE 0
-        END AS is_new_entry,
-        CASE
-            WHEN cumulative_weeks_in_top_10_num >= 4 THEN 1
-            ELSE 0
-        END AS long_run_flag,
-        CASE
-            WHEN weekly_rank_num <= 3 THEN 'top_3'
-            WHEN weekly_rank_num <= 7 THEN 'top_4_to_7'
-            ELSE 'top_8_to_10'
-        END AS rank_bucket,
-        CASE season
-            WHEN 'spring' THEN 1
-            WHEN 'summer' THEN 2
-            WHEN 'fall' THEN 3
-            WHEN 'winter' THEN 4
-        END AS season_order
+        -- TODO: 이전 순위 - 현재 순위로 rank_change를 만든다.
+        TODO AS rank_change,
+        -- TODO: 이전 주 순위가 없으면 신규 진입 1, 아니면 0으로 표시한다.
+        TODO AS is_new_entry,
+        week_row_num,
+        -- TODO: cumulative_weeks_in_top_10_num이 4 이상이면 1, 아니면 0으로 표시한다.
+        TODO AS long_run_flag
     FROM weekly_performance
 )
 SELECT
-    week_date,
-    title_clean,
-    show_title,
-    type_clean,
-    season,
-    season_order,
-    weekly_rank_num,
-    rank_bucket,
-    weekly_hours_viewed_num,
-    prev_week_rank,
-    rank_change,
-    prev_week_hours_viewed,
-    hours_change,
-    hours_growth_rate,
-    is_new_entry,
-    long_run_flag
-FROM weekly_features
-ORDER BY week_date DESC, weekly_rank_num, title_clean
+    wf.week_date,
+    wf.title_clean,
+    wf.show_title,
+    wf.type_clean,
+    tgb.genre,
+    wf.weekly_rank_num,
+    wf.prev_week_rank,
+    wf.rank_change,
+    wf.is_new_entry,
+    wf.week_row_num,
+    wf.long_run_flag
+FROM weekly_features AS wf
+-- TODO: title_clean 기준으로 장르 bridge를 JOIN한다.
+TODO netflix_title_genre_bridge AS tgb
+    ON TODO
+ORDER BY wf.week_date DESC, wf.weekly_rank_num, wf.title_clean, tgb.genre
 LIMIT 50;
 
 -- 정리:
 -- 1) Q1~Q2처럼 장르가 분석 단위인 질문은 long format mart가 자연스럽다.
 -- 2) Q3~Q4처럼 콘텐츠 성과 흐름이 분석 단위인 질문은 콘텐츠-주차 intermediate가 자연스럽다.
--- 3) WITH는 raw -> intermediate -> business/model input 흐름을 SQL 안에서 보이게 만든다.
+-- 3) 이번 세션의 model input 후보는 genre + rank feature + long_run_flag 중심으로 둔다.
