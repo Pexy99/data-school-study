@@ -37,9 +37,9 @@
 -- 1. grain 확인: 한 행이 무엇을 의미하는지 보기
 -- 2. Q1: 글로벌 Top10에 자주 등장하는 장르 찾기
 -- 3. Q2: 계절별 선호 장르 찾기
--- 4. Q3~Q4용 콘텐츠-주차 intermediate 만들기
--- 5. 급상승 feature 만들기
--- 6. 롱런 콘텐츠와 단기 인기 콘텐츠 비교하기
+-- 4. Q3: 시즌별 급상승 장르 찾기
+-- 5. Q4용 콘텐츠-주차 intermediate 만들기
+-- 6. 콘텐츠별 롱런 여부 label 만들기
 -- =========================================================
 
 
@@ -229,6 +229,9 @@ LIMIT 20;
 -- 여기서 배우는 핵심
 -- -> 한 행은 season + genre다.
 -- -> season 안에서 장르별 등장 횟수와 성과를 비교한다.
+-- -> 장르 순위는 Top10 등장 행 수가 많은 순서로 매기고,
+--    동률이면 평균 순위가 좋은 장르를 먼저 둔다.
+-- -> weekly_rank_num은 숫자가 작을수록 좋은 순위다.
 -- =========================================================
 SELECT
     season,
@@ -237,6 +240,8 @@ SELECT
     COUNT(DISTINCT title_clean) AS title_count,
     ROUND(AVG(weekly_rank_num), 2) AS avg_rank,
     ROUND(AVG(weekly_hours_viewed_num), 0) AS avg_hours_viewed,
+    -- 계절 안에서 Top10 등장 행 수가 많은 장르부터 순위를 매긴다.
+    -- 등장 행 수가 같으면 평균 순위가 좋은 장르가 앞선다.
     RANK() OVER (
         PARTITION BY season
         ORDER BY COUNT(*) DESC, AVG(weekly_rank_num)
@@ -255,17 +260,170 @@ LIMIT 40;
 -- =========================================================
 -- [예제 4]
 -- 무엇을 하려는가?
--- -> Q3~Q4를 위해 raw 성과 테이블과 메타데이터 테이블을 조인해서
+-- -> Q3. 이전 시즌 대비 Top10 등장 횟수가 많이 증가한 장르를 찾는다.
+--
+-- 왜 이 예제를 하나?
+-- -> "급상승"은 단순히 많이 등장한 장르가 아니라,
+--    이전 기간보다 얼마나 증가했는지를 봐야 하기 때문이다.
+-- -> 여기서는 급상승을
+--    현재 시즌 top10_row_count - 이전 시즌 top10_row_count로 정의한다.
+--
+-- 여기서 배우는 핵심
+-- -> 먼저 year + season + genre 단위로 집계한 뒤,
+--    LAG()로 같은 장르의 이전 시즌 값을 가져온다.
+-- -> season만 쓰면 여러 해가 섞이므로 year_num과 season_order가 필요하다.
+-- =========================================================
+-- 1단계 확인: year + season + genre 단위로 집계됐는지 본다.
+WITH season_genre_summary AS (
+    SELECT
+        EXTRACT(YEAR FROM week_date)::int AS year_num,
+        season,
+        CASE season
+            WHEN 'spring' THEN 1
+            WHEN 'summer' THEN 2
+            WHEN 'fall' THEN 3
+            WHEN 'winter' THEN 4
+        END AS season_order,
+        genre,
+        COUNT(*) AS top10_row_count,
+        COUNT(DISTINCT title_clean) AS title_count,
+        ROUND(AVG(weekly_rank_num), 2) AS avg_rank
+    FROM netflix_mart_clean
+    GROUP BY year_num, season, season_order, genre
+)
+SELECT
+    year_num,
+    season,
+    genre,
+    top10_row_count,
+    title_count,
+    avg_rank
+FROM season_genre_summary
+ORDER BY year_num, season_order, top10_row_count DESC
+LIMIT 30;
+
+-- 2단계 확인: 같은 장르의 이전 시즌 등장 횟수가 붙었는지 본다.
+WITH season_genre_summary AS (
+    SELECT
+        EXTRACT(YEAR FROM week_date)::int AS year_num,
+        season,
+        CASE season
+            WHEN 'spring' THEN 1
+            WHEN 'summer' THEN 2
+            WHEN 'fall' THEN 3
+            WHEN 'winter' THEN 4
+        END AS season_order,
+        genre,
+        COUNT(*) AS top10_row_count,
+        COUNT(DISTINCT title_clean) AS title_count,
+        ROUND(AVG(weekly_rank_num), 2) AS avg_rank
+    FROM netflix_mart_clean
+    GROUP BY year_num, season, season_order, genre
+),
+season_genre_change AS (
+    SELECT
+        year_num,
+        season,
+        season_order,
+        genre,
+        top10_row_count,
+        title_count,
+        avg_rank,
+        -- 같은 장르 안에서 year_num, season_order 기준 직전 시즌의
+        -- Top10 등장 행 수를 가져온다.
+        LAG(top10_row_count) OVER (
+            PARTITION BY genre
+            ORDER BY year_num, season_order
+        ) AS prev_top10_row_count
+    FROM season_genre_summary
+)
+SELECT
+    year_num,
+    season,
+    genre,
+    top10_row_count,
+    prev_top10_row_count,
+    title_count,
+    avg_rank
+FROM season_genre_change
+ORDER BY genre, year_num, season_order
+LIMIT 30;
+
+-- 3단계: 이전 시즌 대비 증가량을 계산해서 급상승 장르를 찾는다.
+WITH season_genre_summary AS (
+    SELECT
+        EXTRACT(YEAR FROM week_date)::int AS year_num,
+        season,
+        CASE season
+            WHEN 'spring' THEN 1
+            WHEN 'summer' THEN 2
+            WHEN 'fall' THEN 3
+            WHEN 'winter' THEN 4
+        END AS season_order,
+        genre,
+        COUNT(*) AS top10_row_count,
+        COUNT(DISTINCT title_clean) AS title_count,
+        ROUND(AVG(weekly_rank_num), 2) AS avg_rank
+    FROM netflix_mart_clean
+    GROUP BY year_num, season, season_order, genre
+),
+season_genre_change AS (
+    SELECT
+        year_num,
+        season,
+        season_order,
+        genre,
+        top10_row_count,
+        title_count,
+        avg_rank,
+        -- 같은 장르 안에서 year_num, season_order 기준 직전 시즌의
+        -- Top10 등장 행 수를 가져온다.
+        LAG(top10_row_count) OVER (
+            PARTITION BY genre
+            ORDER BY year_num, season_order
+        ) AS prev_top10_row_count
+    FROM season_genre_summary
+)
+SELECT
+    year_num,
+    season,
+    genre,
+    top10_row_count,
+    prev_top10_row_count,
+    top10_row_count - prev_top10_row_count AS count_change,
+    title_count,
+    avg_rank
+FROM season_genre_change
+WHERE prev_top10_row_count IS NOT NULL
+-- 증가량이 큰 장르부터 보여주고, 증가량이 같으면 현재 등장 행 수가 많은 장르를 먼저 둔다.
+ORDER BY count_change DESC, top10_row_count DESC
+LIMIT 30;
+
+-- 완성되면 대략 이런 결과를 기대한다:
+-- year_num | season | genre     | top10_row_count | prev_top10_row_count | count_change
+-- 2022     | summer | TV Dramas | 80              | 45                   | 35
+
+
+
+-- =========================================================
+-- [예제 5]
+-- 무엇을 하려는가?
+-- -> Q4를 위해 raw 성과 테이블과 메타데이터 테이블을 조인해서
 --    콘텐츠-주차 단위 중간 테이블을 새로 만든다.
 --
 -- 왜 이 예제가 중요한가?
 -- -> netflix_mart_clean은 이미 장르 분석을 위해 펼쳐진 결과물이다.
--- -> Q3 급상승과 Q4 롱런 비교처럼 콘텐츠 성과 흐름이 핵심인 질문은
+-- -> Q4 롱런 비교처럼 콘텐츠 성과 흐름이 핵심인 질문은
 --    mart를 다시 접기보다 원천 성과 테이블에서 새 intermediate를 만드는 편이 맞다.
 --
 -- 여기서 배우는 핵심
 -- -> 질문마다 맞는 grain을 먼저 정하고,
 --    그 grain에 맞게 raw/metadata를 조인해서 intermediate table을 만든다.
+--
+-- 기대하는 테이블 형태
+-- -> grain: week_date + title_clean
+-- -> 한 행은 "한 콘텐츠가 특정 주차에 Top10에 등장한 기록"이다.
+-- -> 6번에서는 이 테이블을 title_clean 단위로 요약해서 롱런 여부를 만든다.
 -- =========================================================
 DROP TABLE IF EXISTS netflix_content_week_clean;
 
@@ -332,7 +490,7 @@ SELECT
     COUNT(*) FILTER (WHERE type_clean IS NOT NULL) AS matched_type_rows
 FROM netflix_content_week_clean;
 
--- 확인용: Q3~Q4에서 사용할 콘텐츠-주차 intermediate가 어떻게 생겼는지 본다.
+-- 확인용: Q4에서 사용할 콘텐츠-주차 intermediate가 어떻게 생겼는지 본다.
 SELECT
     week_date,
     title_clean,
@@ -348,77 +506,28 @@ LIMIT 30;
 
 
 -- =========================================================
--- [예제 5]
--- 무엇을 하려는가?
--- -> 이전 주 대비 순위 변화량과 신규 진입 여부를 feature로 만든다.
---
--- 왜 이 예제를 하나?
--- -> "급상승의 기준은 무엇인가?"라는 질문을
---    ranking feature로 바꾸는 대표 예시이기 때문이다.
---
--- 여기서 배우는 핵심
--- -> WITH로 이전 주 값을 먼저 붙인 뒤,
---    바깥 SELECT에서 변화량과 flag를 계산하면 쿼리가 읽기 쉬워진다.
--- -> 이때 PARTITION BY는 title_clean만 사용해서 콘텐츠 흐름을 본다.
--- -> 이번 세션에서는 시청 시간 변화는 빼고, 순위 변화에 집중한다.
--- =========================================================
-WITH weekly_performance AS (
-    SELECT
-        week_date,
-        title_clean,
-        show_title,
-        type_clean,
-        weekly_rank_num,
-        cumulative_weeks_in_top_10_num,
-        LAG(weekly_rank_num) OVER (
-            PARTITION BY title_clean
-            ORDER BY week_date
-        ) AS prev_week_rank,
-        ROW_NUMBER() OVER (
-            PARTITION BY title_clean
-            ORDER BY week_date
-        ) AS week_row_num
-    FROM netflix_content_week_clean
-)
-SELECT
-    week_date,
-    title_clean,
-    show_title,
-    type_clean,
-    weekly_rank_num,
-    prev_week_rank,
-    prev_week_rank - weekly_rank_num AS rank_change,
-    CASE
-        WHEN prev_week_rank IS NULL THEN 1
-        ELSE 0
-    END AS is_new_entry,
-    week_row_num
-FROM weekly_performance
-ORDER BY title_clean, week_date
-LIMIT 40;
-
--- 완성되면 대략 이런 결과를 기대한다:
--- week_date  | show_title | weekly_rank_num | prev_week_rank | rank_change | is_new_entry
--- 2023-01-08 | Example    | 5               |                |             | 1
--- 2023-01-15 | Example    | 2               | 5              | 3           | 0
-
--- 참고:
--- rank_change는 이전 순위 - 현재 순위로 계산했다.
--- 그래서 5위에서 2위가 되면 5 - 2 = 3이고, 양수는 순위 상승을 의미한다.
-
-
-
--- =========================================================
 -- [예제 6]
 -- 무엇을 하려는가?
 -- -> 콘텐츠별 롱런 여부 label을 만든다.
 --
 -- 왜 이 예제를 하나?
--- -> 향후 예측 문제로 바꾸려면 먼저 무엇을 예측할지 정해야 한다.
+-- -> 어떤 요인이 롱런과 관련 있는지 보려면
+--    먼저 롱런 여부를 0/1로 정의해야 한다.
 -- -> 여기서는 Top10에 4주 이상 머문 콘텐츠를 롱런 콘텐츠로 본다.
+-- -> long_run_flag는 이후 요인 분석이나 모델링에서 사용할 target/label 후보가 된다.
 --
 -- 여기서 배우는 핵심
 -- -> content-week 행을 title_clean 단위로 요약해서 label을 만든다.
+-- -> weeks_in_top10, best_rank, max_cumulative_weeks는 콘텐츠별 성과 요약 지표다.
+-- -> 이번 예제는 모델을 만드는 단계가 아니라,
+--    모델링 전에 필요한 content-level label table을 만드는 단계다.
+--
+-- 이 결과로 이어질 수 있는 질문
+-- -> 어떤 콘텐츠가 롱런할 가능성이 높은가?
+-- -> 초반 순위가 좋은 콘텐츠일수록 롱런할 가능성이 높은가?
+-- -> 콘텐츠 유형이 Movie인지 TV Show인지에 따라 롱런 비율이 달라지는가?
+-- -> 특정 장르나 계절에 등장한 콘텐츠가 더 오래 Top10에 머무는가?
+-- -> 초반 시청 시간이 높은 콘텐츠가 롱런으로 이어지는가?
 -- =========================================================
 WITH content_summary AS (
     SELECT
@@ -447,6 +556,10 @@ FROM content_summary
 ORDER BY max_cumulative_weeks DESC, best_rank
 LIMIT 30;
 
+-- 이 결과는 모델 input 전체가 아니라, 모델링에서 사용할 label 후보에 가깝다.
+-- 장르, 계절, 콘텐츠 유형, 초반 성과 같은 feature를 추가하면
+-- "어떤 특성이 롱런 가능성과 관련 있는가?"를 더 구체적으로 볼 수 있다.
+
 -- 완성되면 대략 이런 결과를 기대한다:
 -- title_clean     | type_clean | weeks_in_top10 | best_rank | max_cumulative_weeks | long_run_flag
 -- stranger things | TV Show    | 12             | 1         | 12                   | 1
@@ -455,5 +568,7 @@ LIMIT 30;
 
 -- 정리:
 -- 1) Q1~Q2처럼 장르가 분석 단위인 질문은 long format mart가 자연스럽다.
--- 2) Q3~Q4처럼 콘텐츠 성과 흐름이 분석 단위인 질문은 콘텐츠-주차 intermediate가 자연스럽다.
--- 3) 이번 세션에서는 순위 변화 feature와 롱런 label까지 만든다.
+-- 2) 시즌별 급상승 장르는 year + season + genre 집계 뒤 LAG()로 변화량을 본다.
+-- 3) Q4처럼 콘텐츠 성과 흐름이 분석 단위인 질문은 콘텐츠-주차 intermediate가 자연스럽다.
+-- 4) netflix_content_week_clean -> content_summary -> long_run_flag 흐름은
+--    이후 모델링에서 target을 만드는 과정으로 볼 수 있다.
