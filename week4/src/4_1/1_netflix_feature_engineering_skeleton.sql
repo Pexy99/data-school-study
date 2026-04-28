@@ -40,7 +40,6 @@
 -- 4. Q3~Q4용 콘텐츠-주차 intermediate 만들기
 -- 5. 급상승 feature 만들기
 -- 6. 롱런 콘텐츠와 단기 인기 콘텐츠 비교하기
--- 7. model input table 후보 만들기
 -- =========================================================
 
 
@@ -119,7 +118,7 @@ SELECT
     weekly_rank_num,
     weekly_hours_viewed_num,
     cumulative_weeks_in_top_10_num,
-    -- TODO: 'nan' 문자열을 SQL NULL처럼 다루기 위해 NULLIF를 사용한다.
+    -- TODO: 'nan' 문자열을 분석에서 제외할 수 있는 값으로 바꾼다.
     TODO AS type_clean,
     TODO AS genre
 FROM netflix_mart_global
@@ -134,9 +133,9 @@ WHERE title_clean IS NOT NULL
 -- 확인용: 정제 후 분석 대상 행이 얼마나 남았는지 본다.
 SELECT
     COUNT(*) AS clean_rows,
-    -- TODO: DISTINCT로 고유 콘텐츠 수를 센다.
+    -- TODO: 중복을 제외한 고유 콘텐츠 수를 센다.
     TODO AS clean_title_count,
-    -- TODO: DISTINCT로 고유 장르 수를 센다.
+    -- TODO: 중복을 제외한 고유 장르 수를 센다.
     TODO AS clean_genre_count
 FROM netflix_mart_clean;
 
@@ -169,6 +168,9 @@ LIMIT 30;
 
 -- 확인용: 같은 주차 + 같은 콘텐츠가 장르 때문에 여러 행으로 보일 수 있는지 본다.
 -- row_count가 3이고 genre_count가 3이면, 같은 콘텐츠가 장르 3개로 펼쳐졌다는 뜻이다.
+-- 단, 일부 TV Show는 같은 주차에 여러 season_title이 동시에 Top10에 들어올 수 있다.
+-- 예: Stranger Things가 한 주에 시즌 2/3/4까지 같이 순위권이면
+--     성과 행 4개 * 장르 3개 = row_count 12, genre_count 3으로 보일 수 있다.
 SELECT
     week_date,
     title_clean,
@@ -203,9 +205,9 @@ LIMIT 20;
 -- =========================================================
 SELECT
     genre,
-    -- TODO: COUNT(*)로 장르별 Top10 등장 행 수를 센다.
+    -- TODO: 장르별 Top10 등장 행 수를 센다.
     TODO AS top10_row_count,
-    -- TODO: COUNT(DISTINCT title_clean)로 장르별 고유 콘텐츠 수를 센다.
+    -- TODO: 장르별 고유 콘텐츠 수를 센다.
     TODO AS title_count,
     -- TODO: 평균 순위를 소수점 둘째 자리까지 반올림한다.
     TODO AS avg_rank,
@@ -244,7 +246,7 @@ SELECT
     TODO AS title_count,
     ROUND(AVG(weekly_rank_num), 2) AS avg_rank,
     ROUND(AVG(weekly_hours_viewed_num), 0) AS avg_hours_viewed,
-    -- TODO: season별로 장르 순위를 매긴다. RANK()와 PARTITION BY season을 사용한다.
+    -- TODO: 계절 안에서 장르 순위를 매긴다.
     TODO AS genre_rank_in_season
 FROM netflix_mart_clean
 GROUP BY season, genre
@@ -305,6 +307,8 @@ title_features AS (
     FROM netflix_titles
     WHERE title IS NOT NULL
       AND title NOT LIKE '%�%'
+      AND title NOT LIKE '%ÿ%'
+      AND title NOT LIKE '%ã%'
     GROUP BY LOWER(TRIM(title))
 )
 SELECT
@@ -318,19 +322,6 @@ SELECT
 FROM content_week_base AS cwb
 JOIN title_features AS tf
     ON cwb.title_clean = tf.title_clean;
-
-DROP TABLE IF EXISTS netflix_title_genre_bridge;
-
-CREATE TEMP TABLE netflix_title_genre_bridge AS
-SELECT DISTINCT
-    LOWER(TRIM(nt.title)) AS title_clean,
-    TRIM(genre_value) AS genre
-FROM netflix_titles AS nt
-CROSS JOIN LATERAL UNNEST(STRING_TO_ARRAY(nt.listed_in, ',')) AS genre_value
-WHERE nt.title IS NOT NULL
-  AND nt.title NOT LIKE '%�%'
-  AND nt.listed_in IS NOT NULL
-  AND TRIM(genre_value) <> '';
 
 -- 확인용: 콘텐츠-주차 단위로 중복이 사라졌는지 확인한다.
 -- duplicate_content_week_rows가 0이면 week_date + title_clean grain으로 볼 수 있다.
@@ -348,17 +339,18 @@ SELECT
     COUNT(*) FILTER (WHERE type_clean IS NOT NULL) AS matched_type_rows
 FROM netflix_content_week_clean;
 
--- 확인용: 장르 bridge도 title_clean + genre 단위로 만들어졌는지 본다.
+-- 확인용: Q3~Q4에서 사용할 콘텐츠-주차 intermediate가 어떻게 생겼는지 본다.
 SELECT
+    week_date,
     title_clean,
-    genre
-FROM netflix_title_genre_bridge
-ORDER BY title_clean, genre
-LIMIT 40;
-
--- 완성되면 대략 이런 결과를 기대한다:
--- title_clean | genre
--- the crown   | British TV Shows
+    show_title,
+    type_clean,
+    weekly_rank_num,
+    weekly_hours_viewed_num,
+    cumulative_weeks_in_top_10_num
+FROM netflix_content_week_clean
+ORDER BY week_date DESC, weekly_rank_num, title_clean
+LIMIT 30;
 
 
 
@@ -385,9 +377,9 @@ WITH weekly_performance AS (
         type_clean,
         weekly_rank_num,
         cumulative_weeks_in_top_10_num,
-        -- TODO: LAG()로 같은 title_clean의 이전 주 순위를 가져온다.
+        -- TODO: 같은 콘텐츠의 이전 주 순위를 가져온다.
         TODO AS prev_week_rank,
-        -- TODO: ROW_NUMBER()로 같은 title_clean 안에서 주차 순서를 만든다.
+        -- TODO: 같은 콘텐츠 안에서 주차 순서를 만든다.
         TODO AS week_row_num
     FROM netflix_content_week_clean
 )
@@ -461,74 +453,7 @@ LIMIT 30;
 
 
 
--- =========================================================
--- [예제 7]
--- 무엇을 하려는가?
--- -> 다음 회차 모델링이나 비교 분석에 넘길 수 있는 model input 후보를 만든다.
---
--- 왜 이 예제를 하나?
--- -> 모델링은 raw 데이터에 바로 들어가는 것이 아니라,
---    행 단위와 feature가 정리된 입력 테이블이 있어야 자연스럽다.
---
--- 여기서 배우는 핵심
--- -> model input table은 보통 "무엇을 한 행으로 볼 것인가"를 먼저 정하고,
---    그 단위에 맞춰 feature를 모은 결과다.
--- -> 여기서는 week_date + title_clean을 한 행으로 본다.
--- -> 장르는 1:N 관계이므로 bridge를 조인해서 붙인다.
--- -> 이번 세션에서는 ranking feature 중심으로 최소 컬럼만 남긴다.
--- =========================================================
-WITH weekly_performance AS (
-    SELECT
-        week_date,
-        title_clean,
-        show_title,
-        type_clean,
-        weekly_rank_num,
-        cumulative_weeks_in_top_10_num,
-        -- TODO: LAG()로 같은 title_clean의 이전 주 순위를 가져온다.
-        TODO AS prev_week_rank,
-        -- TODO: ROW_NUMBER()로 같은 title_clean 안에서 주차 순서를 만든다.
-        TODO AS week_row_num
-    FROM netflix_content_week_clean
-),
-weekly_features AS (
-    SELECT
-        week_date,
-        title_clean,
-        show_title,
-        type_clean,
-        weekly_rank_num,
-        cumulative_weeks_in_top_10_num,
-        prev_week_rank,
-        -- TODO: 이전 순위 - 현재 순위로 rank_change를 만든다.
-        TODO AS rank_change,
-        -- TODO: 이전 주 순위가 없으면 신규 진입 1, 아니면 0으로 표시한다.
-        TODO AS is_new_entry,
-        week_row_num,
-        -- TODO: cumulative_weeks_in_top_10_num이 4 이상이면 1, 아니면 0으로 표시한다.
-        TODO AS long_run_flag
-    FROM weekly_performance
-)
-SELECT
-    wf.week_date,
-    wf.title_clean,
-    wf.show_title,
-    wf.type_clean,
-    tgb.genre,
-    wf.weekly_rank_num,
-    wf.prev_week_rank,
-    wf.rank_change,
-    wf.is_new_entry,
-    wf.week_row_num,
-    wf.long_run_flag
-FROM weekly_features AS wf
--- TODO: title_clean 기준으로 장르 bridge를 JOIN한다.
-TODO netflix_title_genre_bridge AS tgb
-    ON TODO
-ORDER BY wf.week_date DESC, wf.weekly_rank_num, wf.title_clean, tgb.genre
-LIMIT 50;
-
 -- 정리:
 -- 1) Q1~Q2처럼 장르가 분석 단위인 질문은 long format mart가 자연스럽다.
 -- 2) Q3~Q4처럼 콘텐츠 성과 흐름이 분석 단위인 질문은 콘텐츠-주차 intermediate가 자연스럽다.
--- 3) 이번 세션의 model input 후보는 genre + rank feature + long_run_flag 중심으로 둔다.
+-- 3) 이번 세션에서는 순위 변화 feature와 롱런 label까지 만든다.
