@@ -1,0 +1,334 @@
+title_clean,show_title,type_clean,primary_genre,first_week_date,first_season,first_month_num,first_week_rank,first_week_hours_viewed,initial_rank_bucket,initial_hours_bucket,long_run_flag
+2 hearts,2 Hearts,Movie,Dramas,2023-05-28,spring,5,2,19280000,top_3,medium,0
+365 days,365 Days,Movie,Dramas,2022-05-01,spring,5,4,10040000,rank_4_7,medium,0
+6 underground,6 Underground,Movie,Action & Adventure,2021-11-21,fall,11,9,7770000,rank_8_10,low,0
+a bad moms christmas,A Bad Moms Christmas,Movie,Comedies,2022-12-25,winter,12,5,10890000,rank_4_7,medium,0
+a beautiful life,A Beautiful Life,Movie,Dramas,2023-06-04,summer,6,3,16710000,top_3,medium,1
+a classic horror story,A Classic Horror Story,Movie,Horror Movies,2021-07-18,summer,7,3,9090000,top_3,low,0
+a perfect fit,A Perfect Fit,Movie,Comedies,2021-07-18,summer,7,6,3170000,rank_4_7,low,0
+afterlife of the party,Afterlife of the Party,Movie,Comedies,2021-09-05,fall,9,3,26710000,top_3,medium,0
+aftermath,Aftermath,Movie,Horror Movies,2021-08-08,summer,8,1,24200000,top_3,medium,0
+alice in borderland,Alice in Borderland,TV Show,International TV Shows,2021-09-26,fall,9,8,10890000,rank_8_10,medium,1
+all american,All American,TV Show,TV Dramas,2021-08-01,summer,8,2,43970000,top_3,medium,1
+alone,Alone,TV Show,Reality TV,2022-07-10,summer,7,10,11440000,rank_8_10,medium,0
+alrawabi school for girls,AlRawabi School for Girls,TV Show,International TV Shows,2021-08-15,summer,8,6,11620000,rank_4_7,medium,0
+american assassin,American Assassin,Movie,Action & Adventure,2022-07-10,summer,7,5,13360000,rank_4_7,medium,0
+ankahi kahaniya,Ankahi Kahaniya,Movie,Dramas,2021-09-26,fall,9,6,1260000,rank_4_7,low,0
+another life,Another Life,TV Show,British TV Shows,2021-10-24,fall,10,9,15760000,rank_8_10,medium,0
+army of the dead,Army of the Dead,Movie,Action & Adventure,2021-10-31,fall,10,7,5780000,rank_4_7,low,0
+attack on titan,Attack on Titan,TV Show,Anime Series,2023-11-12,fall,11,9,4700000,rank_8_10,low,0
+atypical,Atypical,TV Show,TV Comedies,2021-07-11,summer,7,6,20620000,rank_4_7,medium,0
+bake squad,Bake Squad,TV Show,Reality TV,2021-08-22,summer,8,6,13220000,rank_4_7,medium,0
+barbarians,Barbarians,TV Show,International TV Shows,2022-10-23,fall,10,5,22890000,rank_4_7,medium,0
+barbie life in the dreamhouse,Barbie Life in the Dreamhouse,TV Show,Kids' TV,2023-07-30,summer,7,6,9100000,rank_4_7,low,0
+bartkowiak,Bartkowiak,Movie,Action & Adventure,2021-08-01,summer,8,5,9210000,rank_4_7,low,0
+beckett,Beckett,Movie,Action & Adventure,2021-08-15,summer,8,3,23580000,top_3,medium,0
+better call saul,Better Call Saul,TV Show,Crime TV Shows,2022-04-10,spring,4,6,15170000,rank_4_7,medium,0
+big mouth,Big Mouth,TV Show,TV Comedies,2021-11-07,fall,11,9,19570000,rank_8_10,medium,0
+biohackers,Biohackers,TV Show,International TV Shows,2021-07-18,summer,7,10,7500000,rank_8_10,low,0
+black beach,Black Beach,Movie,Action & Adventure,2022-03-13,spring,3,10,1600000,rank_8_10,low,0
+black island,Black Island,Movie,International Movies,2021-08-22,summer,8,1,17330000,top_3,medium,0
+black mirror,Black Mirror,TV Show,British TV Shows,2023-06-18,summer,6,2,58700000,top_3,high,1
+bling empire,Bling Empire,TV Show,Reality TV,2022-05-15,spring,5,8,10750000,rank_8_10,medium,0
+blood & water,Blood & Water,TV Show,International TV Shows,2021-10-03,fall,10,8,15870000,rank_8_10,medium,0
+blood red sky,Blood Red Sky,Movie,Action & Adventure,2021-07-25,summer,7,1,35930000,top_3,medium,1
+brand new cherry flavor,Brand New Cherry Flavor,TV Show,TV Dramas,2021-08-22,summer,8,8,11140000,rank_8_10,medium,0
+bridgerton,Bridgerton,TV Show,Romantic TV Shows,2022-03-27,spring,3,1,225300000,top_3,high,1
+budapest,Budapest,Movie,Comedies,2021-10-31,fall,10,9,1170000,rank_8_10,low,0
+burlesque,Burlesque,Movie,Dramas,2023-03-12,spring,3,10,5540000,rank_8_10,low,0
+capitani,Capitani,TV Show,Crime TV Shows,2022-07-17,summer,7,10,9480000,rank_8_10,low,0
+car masters: rust to riches,Car Masters: Rust to Riches,TV Show,Reality TV,2021-08-08,summer,8,10,13930000,rank_8_10,medium,0
+charlie's angels,Charlie's Angels,Movie,Action & Adventure,2022-10-23,fall,10,10,4920000,rank_8_10,low,0
+cheer,Cheer,TV Show,Docuseries,2022-01-16,winter,1,5,29080000,rank_4_7,medium,0
+city of god,City of God,Movie,Dramas,2023-03-26,spring,3,9,3050000,rank_8_10,low,0
+clickbait,Clickbait,TV Show,Crime TV Shows,2021-08-29,summer,8,1,51280000,top_3,high,1
+coach carter,Coach Carter,Movie,Dramas,2022-03-13,spring,3,10,5450000,rank_8_10,low,0
+cobra kai,Cobra Kai,TV Show,TV Action & Adventure,2022-01-02,winter,1,1,133510000,top_3,high,1
+cocaine cowboys: the kings of miami,Cocaine Cowboys: The Kings of Miami,TV Show,Crime TV Shows,2021-08-08,summer,8,5,18890000,rank_4_7,medium,0
+cocomelon,CoComelon,TV Show,Kids' TV,2021-07-04,summer,7,9,11430000,rank_8_10,medium,1
+collateral,Collateral,TV Show,British TV Shows,2022-09-04,fall,9,10,6100000,rank_8_10,low,0
+confessions of an invisible girl,Confessions of an Invisible Girl,Movie,Children & Family Movies,2021-09-26,fall,9,3,7130000,top_3,low,1
+control z,Control Z,TV Show,International TV Shows,2021-08-08,summer,8,2,34010000,top_3,medium,0
+d.p.,D.P.,TV Show,International TV Shows,2021-08-29,summer,8,7,8430000,rank_4_7,low,0
+daddy day care,Daddy Day Care,Movie,Children & Family Movies,2023-01-15,winter,1,10,4850000,rank_8_10,low,0
+dark desire,Dark Desire,TV Show,Crime TV Shows,2022-02-06,winter,2,3,74580000,top_3,high,1
+daughter from another mother,Daughter From Another Mother,TV Show,International TV Shows,2021-12-26,winter,12,7,13040000,rank_4_7,medium,0
+dead man down,Dead Man Down,Movie,Action & Adventure,2021-08-08,summer,8,8,5840000,rank_8_10,low,0
+dead to me,Dead to Me,TV Show,TV Comedies,2022-11-20,fall,11,4,30300000,rank_4_7,medium,1
+deep,Deep,Movie,Dramas,2021-07-25,summer,7,8,3200000,rank_8_10,low,0
+demon slayer: kimetsu no yaiba,Demon Slayer: Kimetsu no Yaiba,TV Show,Anime Series,2021-11-07,fall,11,9,7940000,rank_8_10,low,0
+den of thieves,Den of Thieves,Movie,Action & Adventure,2022-05-15,spring,5,9,5420000,rank_8_10,low,0
+designated survivor,Designated Survivor,TV Show,Crime TV Shows,2023-04-09,spring,4,9,11990000,rank_8_10,medium,0
+disenchantment,Disenchantment,TV Show,TV Action & Adventure,2022-02-13,winter,2,9,17090000,rank_8_10,medium,0
+dive club,Dive Club,TV Show,Kids' TV,2021-09-12,fall,9,9,11480000,rank_8_10,medium,0
+don,Don,Movie,Action & Adventure,2022-06-12,summer,6,3,3640000,top_3,low,0
+dr. seuss' the grinch,Dr. Seuss' The Grinch,Movie,Children & Family Movies,2023-09-10,fall,9,4,5900000,rank_4_7,low,1
+dr. seuss' the lorax,Dr. Seuss' The Lorax,Movie,Children & Family Movies,2023-04-16,spring,4,10,5890000,rank_8_10,low,0
+dynasty,Dynasty,TV Show,TV Dramas,2021-10-24,fall,10,6,19970000,rank_4_7,medium,1
+dynasty warriors,Dynasty Warriors,Movie,Action & Adventure,2021-07-04,summer,7,5,4100000,rank_4_7,low,0
+edens zero,EDENS ZERO,TV Show,Anime Series,2021-11-28,fall,11,9,7470000,rank_8_10,low,0
+el marginal,El marginal,TV Show,Crime TV Shows,2022-01-23,winter,1,2,21730000,top_3,medium,0
+elite,Elite,TV Show,Crime TV Shows,2021-07-04,summer,7,1,69590000,top_3,high,1
+elize matsunaga: once upon a crime,Elize Matsunaga: Once Upon a Crime,TV Show,Crime TV Shows,2021-07-11,summer,7,6,11700000,rank_4_7,medium,0
+emily in paris,Emily in Paris,TV Show,Romantic TV Shows,2021-12-26,winter,12,2,125680000,top_3,high,1
+enola holmes,Enola Holmes,Movie,Action & Adventure,2022-11-06,fall,11,8,9640000,rank_8_10,low,0
+extraction,Extraction,Movie,Action & Adventure,2023-06-18,summer,6,2,18800000,top_3,medium,0
+fate: the winx saga,Fate: The Winx Saga,TV Show,British TV Shows,2022-09-18,fall,9,2,48960000,top_3,medium,1
+fatherhood,Fatherhood,Movie,Dramas,2021-07-04,summer,7,1,25680000,top_3,medium,0
+fauda,Fauda,TV Show,Crime TV Shows,2023-01-22,winter,1,7,12050000,rank_4_7,medium,0
+fear street part 1: 1994,Fear Street Part 1: 1994,Movie,Horror Movies,2021-07-04,summer,7,2,16620000,top_3,medium,1
+fear street part 2: 1978,Fear Street Part 2: 1978,Movie,Horror Movies,2021-07-11,summer,7,2,16060000,top_3,medium,1
+fear street part 3: 1666,Fear Street Part 3: 1666,Movie,Horror Movies,2021-07-18,summer,7,1,20080000,top_3,medium,0
+fierce,Fierce,Movie,Comedies,2021-11-14,fall,11,8,1800000,rank_8_10,low,0
+firedrake the silver dragon,Firedrake the Silver Dragon,Movie,Children & Family Movies,2021-09-19,fall,9,7,9650000,rank_4_7,low,0
+firefly lane,Firefly Lane,TV Show,Romantic TV Shows,2022-12-04,winter,12,3,29010000,top_3,medium,1
+first kill,First Kill,Movie,Action & Adventure,2021-09-19,fall,9,10,6950000,rank_8_10,low,0
+first love,First Love,Movie,Dramas,2022-11-27,fall,11,8,7220000,rank_8_10,low,0
+formula 1: drive to survive,Formula 1: Drive to Survive,TV Show,Docuseries,2022-03-13,spring,3,5,28010000,rank_4_7,medium,0
+gabby's dollhouse,Gabby's Dollhouse,TV Show,Kids' TV,2021-08-15,summer,8,8,13170000,rank_8_10,medium,1
+ganglands,Ganglands,TV Show,Crime TV Shows,2021-09-26,fall,9,4,16260000,rank_4_7,medium,1
+ginny & georgia,Ginny & Georgia,TV Show,Romantic TV Shows,2023-01-08,winter,1,1,224840000,top_3,high,1
+glitch,Glitch,TV Show,International TV Shows,2022-10-16,fall,10,8,7440000,rank_8_10,low,0
+glow up,Glow Up,TV Show,British TV Shows,2022-08-28,summer,8,10,14280000,rank_8_10,medium,0
+gone for good,Gone for Good,TV Show,Crime TV Shows,2021-08-15,summer,8,8,9750000,rank_8_10,low,0
+good girls,Good Girls,TV Show,Crime TV Shows,2021-09-05,fall,9,2,47170000,top_3,medium,1
+good on paper,Good on Paper,Movie,Comedies,2021-07-04,summer,7,5,10580000,rank_4_7,medium,0
+goosebumps 2: haunted halloween,Goosebumps 2: Haunted Halloween,Movie,Children & Family Movies,2021-11-21,fall,11,10,7680000,rank_8_10,low,0
+grace and frankie,Grace and Frankie,TV Show,TV Comedies,2022-05-01,spring,5,7,15470000,rank_4_7,medium,0
+green lantern,Green Lantern,Movie,Action & Adventure,2021-09-05,fall,9,10,6230000,rank_8_10,low,0
+grey's anatomy,Grey's Anatomy,TV Show,Romantic TV Shows,2021-10-03,fall,10,5,18680000,rank_4_7,medium,0
+grown ups,Grown Ups,Movie,Comedies,2021-09-26,fall,9,6,9250000,rank_4_7,low,0
+gunpowder milkshake,Gunpowder Milkshake,Movie,Action & Adventure,2021-07-18,summer,7,4,11770000,rank_4_7,medium,0
+haseen dillruba,Haseen Dillruba,Movie,International Movies,2021-07-04,summer,7,2,7370000,top_3,low,1
+he's all that,He's All That,Movie,Comedies,2021-08-29,summer,8,2,42810000,top_3,medium,0
+heartbreak high,Heartbreak High,TV Show,International TV Shows,2022-09-25,fall,9,6,18250000,rank_4_7,medium,0
+heist,Heist,TV Show,Crime TV Shows,2021-07-18,summer,7,8,18710000,rank_8_10,medium,0
+hit & run,Hit & Run,TV Show,TV Action & Adventure,2021-08-08,summer,8,4,23570000,rank_4_7,medium,1
+home,Home,Movie,Children & Family Movies,2023-04-09,spring,4,5,10350000,rank_4_7,medium,0
+homefront,Homefront,Movie,Action & Adventure,2022-07-03,summer,7,6,11000000,rank_4_7,medium,0
+hometown cha-cha-cha,Hometown Cha-Cha-Cha,TV Show,International TV Shows,2021-09-05,fall,9,7,9630000,rank_4_7,low,1
+hospital playlist,Hospital Playlist,TV Show,International TV Shows,2021-07-18,summer,7,8,8530000,rank_8_10,low,1
+hotel del luna,Hotel Del Luna,TV Show,International TV Shows,2021-09-12,fall,9,10,9980000,rank_8_10,low,0
+hotel transylvania 3: summer vacation,Hotel Transylvania 3: Summer Vacation,Movie,Children & Family Movies,2021-08-08,summer,8,7,6250000,rank_4_7,low,1
+how i became a superhero,How I Became a Superhero,Movie,Action & Adventure,2021-07-11,summer,7,3,8820000,top_3,low,0
+how it ends,How It Ends,Movie,Action & Adventure,2022-04-10,spring,4,8,5650000,rank_8_10,low,1
+how the grinch stole christmas,How the Grinch Stole Christmas,Movie,Children & Family Movies,2022-12-18,winter,12,7,7530000,rank_4_7,low,0
+how to sell drugs online (fast),How to Sell Drugs Online (Fast),TV Show,Crime TV Shows,2021-08-01,summer,8,3,16470000,top_3,medium,0
+hubie halloween,Hubie Halloween,Movie,Comedies,2022-10-30,fall,10,9,3960000,rank_8_10,low,0
+hunter x hunter (2011),Hunter X Hunter (2011),TV Show,Anime Series,2021-08-08,summer,8,6,9890000,rank_4_7,low,0
+i am a killer,I AM A KILLER,TV Show,British TV Shows,2022-09-04,fall,9,6,17920000,rank_4_7,medium,0
+ibiza,Ibiza,Movie,Comedies,2023-03-12,spring,3,9,1420000,rank_8_10,low,0
+indian matchmaking,Indian Matchmaking,TV Show,Reality TV,2023-04-30,spring,4,10,11410000,rank_8_10,medium,0
+into the night,Into the Night,TV Show,International TV Shows,2021-09-12,fall,9,8,10630000,rank_8_10,medium,0
+into the wind,Into the Wind,Movie,Dramas,2022-02-13,winter,2,3,10710000,top_3,medium,0
+intrusion,Intrusion,Movie,Thrillers,2021-09-26,fall,9,1,30040000,top_3,medium,0
+invisible city,Invisible City,TV Show,Crime TV Shows,2023-03-26,spring,3,9,11130000,rank_8_10,medium,0
+jaguar,Jaguar,TV Show,International TV Shows,2021-09-26,fall,9,7,11620000,rank_4_7,medium,0
+je suis karl,Je Suis Karl,Movie,Dramas,2021-10-03,fall,10,8,2140000,rank_8_10,low,0
+jj+e,JJ+E,Movie,Dramas,2021-09-12,fall,9,2,5410000,top_3,low,0
+jojo's bizarre adventure,JoJo's Bizarre Adventure,TV Show,Anime Series,2021-12-05,winter,12,8,13980000,rank_8_10,medium,0
+jurassic world camp cretaceous,Jurassic World Camp Cretaceous,TV Show,Kids' TV,2021-12-05,winter,12,7,16900000,rank_4_7,medium,0
+kaleidoscope,Kaleidoscope,Movie,Thrillers,2023-01-08,winter,1,2,112320000,top_3,high,1
+kate,Kate,Movie,Action & Adventure,2021-09-12,fall,9,1,38780000,top_3,medium,1
+katla,Katla,TV Show,International TV Shows,2021-07-04,summer,7,9,9190000,rank_8_10,low,0
+kengan ashura,KENGAN ASHURA,TV Show,Anime Series,2023-09-24,fall,9,4,11700000,rank_4_7,medium,0
+kingdom,Kingdom,TV Show,International TV Shows,2023-07-23,summer,7,3,6600000,top_3,low,0
+kingdom: ashin of the north,Kingdom: Ashin of the North,Movie,Horror Movies,2021-07-25,summer,7,2,16380000,top_3,medium,1
+kung fu hustle,Kung Fu Hustle,Movie,Action & Adventure,2021-09-12,fall,9,3,3250000,top_3,low,0
+la reina del sur,La Reina del Sur,TV Show,Crime TV Shows,2023-01-01,winter,1,5,22410000,rank_4_7,medium,1
+last summer,Last Summer,Movie,Dramas,2021-07-11,summer,7,10,1270000,rank_8_10,low,0
+locke & key,Locke & Key,TV Show,TV Action & Adventure,2021-10-24,fall,10,4,51240000,rank_4_7,high,1
+long shot,Long Shot,Movie,Documentaries,2023-10-22,fall,10,5,8800000,rank_4_7,low,0
+lost bullet,Lost Bullet,Movie,Action & Adventure,2022-01-23,winter,1,8,2050000,rank_8_10,low,1
+lost in space,Lost in Space,TV Show,TV Action & Adventure,2021-12-05,winter,12,1,68300000,top_3,high,1
+love 101,Love 101,TV Show,International TV Shows,2021-10-03,fall,10,9,12600000,rank_8_10,medium,0
+love is blind,Love Is Blind,TV Show,Reality TV,2021-08-01,summer,8,7,19370000,rank_4_7,medium,1
+love is in the air,Love is in the Air,TV Show,International TV Shows,2023-10-01,fall,10,2,17300000,top_3,medium,0
+"love, death & robots","Love, Death & Robots",TV Show,TV Action & Adventure,2022-05-22,spring,5,6,14420000,rank_4_7,medium,0
+lucifer,Lucifer,TV Show,Crime TV Shows,2021-07-04,summer,7,6,26440000,rank_4_7,medium,1
+luis miguel - the series,Luis Miguel - The Series,TV Show,International TV Shows,2021-10-31,fall,10,7,9990000,rank_4_7,low,0
+lupin,Lupin,TV Show,Crime TV Shows,2021-07-04,summer,7,4,20970000,rank_4_7,medium,1
+major grom: plague doctor,Major Grom: Plague Doctor,Movie,Action & Adventure,2021-07-11,summer,7,1,26150000,top_3,medium,1
+manifest,Manifest,TV Show,TV Dramas,2021-07-04,summer,7,3,57660000,top_3,high,1
+marauders,Marauders,Movie,Action & Adventure,2022-10-02,fall,10,7,6700000,rank_4_7,low,0
+married at first sight,Married at First Sight,TV Show,Reality TV,2022-04-24,spring,4,9,12810000,rank_8_10,medium,0
+memoirs of a geisha,Memoirs of a Geisha,Movie,Dramas,2022-06-05,summer,6,5,10200000,rank_4_7,medium,0
+midnight mass,Midnight Mass,TV Show,TV Dramas,2021-09-26,fall,9,3,33200000,top_3,medium,1
+mimi,Mimi,Movie,Comedies,2021-08-01,summer,8,4,9210000,rank_4_7,low,1
+monsters inside: the 24 faces of billy milligan,Monsters Inside: The 24 Faces of Billy Milligan,TV Show,Crime TV Shows,2021-09-26,fall,9,8,15150000,rank_8_10,medium,0
+mother's day,Mother's Day,Movie,Comedies,2021-07-11,summer,7,7,9200000,rank_4_7,low,1
+murder by the coast,Murder by the Coast,Movie,Documentaries,2021-07-04,summer,7,7,2690000,rank_4_7,low,0
+murder mystery,Murder Mystery,Movie,Comedies,2023-03-26,spring,3,6,4490000,rank_4_7,low,1
+my little pony: a new generation,My Little Pony: A New Generation,Movie,Children & Family Movies,2021-09-26,fall,9,3,15510000,top_3,medium,1
+narcos: mexico,Narcos: Mexico,TV Show,Crime TV Shows,2021-11-07,fall,11,5,28150000,rank_4_7,medium,1
+navarasa,Navarasa,TV Show,TV Shows,2021-08-08,summer,8,8,3520000,rank_8_10,low,0
+never have i ever,Never Have I Ever,TV Show,TV Comedies,2021-07-18,summer,7,2,58380000,top_3,high,1
+"nevertheless,","Nevertheless,",TV Show,International TV Shows,2021-07-18,summer,7,9,8130000,rank_8_10,low,1
+"newly rich, newly poor","Newly Rich, Newly Poor",TV Show,International TV Shows,2021-07-04,summer,7,3,28270000,top_3,medium,1
+next in fashion,Next in Fashion,TV Show,Reality TV,2023-03-05,spring,3,10,16160000,rank_8_10,medium,0
+nightbooks,Nightbooks,Movie,Children & Family Movies,2021-09-19,fall,9,5,13160000,rank_4_7,medium,0
+nobody sleeps in the woods tonight,Nobody Sleeps in the Woods Tonight,Movie,Horror Movies,2021-10-31,fall,10,6,1900000,rank_4_7,low,0
+octonauts: above & beyond,Octonauts: Above & Beyond,TV Show,British TV Shows,2021-09-12,fall,9,8,11730000,rank_8_10,medium,0
+on my block,On My Block,TV Show,Romantic TV Shows,2021-10-10,fall,10,2,63520000,top_3,high,0
+one more time,One More Time,TV Show,International TV Shows,2023-04-23,spring,4,6,3890000,rank_4_7,low,0
+one piece,ONE PIECE,TV Show,Anime Series,2023-09-03,fall,9,1,140100000,top_3,high,1
+only mine,Only Mine,Movie,Thrillers,2021-10-31,fall,10,6,6670000,rank_4_7,low,0
+open your eyes,Open Your Eyes,TV Show,International TV Shows,2021-08-29,summer,8,8,8220000,rank_8_10,low,0
+our planet,Our Planet,TV Show,Docuseries,2023-06-18,summer,6,4,11900000,rank_4_7,medium,0
+out of my league,Out of my league,Movie,Comedies,2021-08-22,summer,8,3,7120000,top_3,low,1
+outer banks,Outer Banks,TV Show,TV Action & Adventure,2021-08-01,summer,8,1,126400000,top_3,high,1
+ozark,Ozark,TV Show,Crime TV Shows,2022-01-23,winter,1,1,101490000,top_3,high,1
+peaky blinders,Peaky Blinders,TV Show,British TV Shows,2022-06-12,summer,6,5,45710000,rank_4_7,medium,1
+pinkfong & baby shark's space adventure,Pinkfong & Baby Shark's Space Adventure,Movie,Children & Family Movies,2021-09-05,fall,9,10,1120000,rank_8_10,low,0
+playing with fire,Playing with Fire,TV Show,International TV Shows,2022-04-24,spring,4,7,6750000,rank_4_7,low,0
+prey,Prey,Movie,International Movies,2021-09-12,fall,9,1,13440000,top_3,medium,0
+prime time,Prime Time,Movie,Dramas,2021-07-04,summer,7,10,2080000,rank_8_10,low,0
+puss in boots,Puss in Boots,Movie,Children & Family Movies,2023-01-22,winter,1,7,5860000,rank_4_7,low,0
+queen,Queen,Movie,Comedies,2022-07-03,summer,7,10,7400000,rank_8_10,low,0
+queen of the south,Queen of the South,TV Show,Crime TV Shows,2022-03-13,spring,3,10,11460000,rank_8_10,medium,0
+queer eye,Queer Eye,TV Show,Reality TV,2022-01-02,winter,1,7,14420000,rank_4_7,medium,0
+ragnarok,Ragnarok,TV Show,International TV Shows,2023-08-27,summer,8,2,47600000,top_3,medium,1
+raising dion,Raising Dion,TV Show,Kids' TV,2022-02-06,winter,2,2,75550000,top_3,high,1
+rebelde,Rebelde,TV Show,International TV Shows,2022-01-09,winter,1,2,33180000,top_3,medium,0
+record of ragnarok,Record of Ragnarok,TV Show,Anime Series,2021-07-04,summer,7,10,9140000,rank_8_10,low,1
+redemption,Redemption,Movie,Dramas,2021-10-17,fall,10,7,5800000,rank_4_7,low,0
+resort to love,Resort to Love,Movie,Comedies,2021-08-01,summer,8,1,28050000,top_3,medium,1
+riverdale,Riverdale,TV Show,Crime TV Shows,2022-01-30,winter,1,10,16460000,rank_8_10,medium,0
+rogue city,Rogue City,Movie,Dramas,2022-01-23,winter,1,6,2450000,rank_4_7,low,0
+rurouni kenshin: the beginning,Rurouni Kenshin: The Beginning,Movie,Action & Adventure,2021-08-01,summer,8,6,8610000,rank_4_7,low,1
+rurouni kenshin: the final,Rurouni Kenshin: The Final,Movie,Action & Adventure,2021-07-04,summer,7,3,5340000,top_3,low,0
+rust creek,Rust Creek,Movie,Thrillers,2021-07-18,summer,7,10,6560000,rank_8_10,low,0
+s.w.a.t.,S.W.A.T.,Movie,Action & Adventure,2023-05-28,spring,5,5,20230000,rank_4_7,medium,0
+safe house,Safe House,Movie,Action & Adventure,2021-09-19,fall,9,8,9060000,rank_8_10,low,0
+sas: rise of the black swan,SAS: Rise of the Black Swan,Movie,Action & Adventure,2021-08-29,summer,8,3,35650000,top_3,medium,0
+scary movie,Scary Movie,Movie,Comedies,2023-10-22,fall,10,10,5400000,rank_8_10,low,0
+school life,School Life,Movie,Comedies,2022-09-04,fall,9,7,3420000,rank_4_7,low,0
+schumacher,Schumacher,Movie,Documentaries,2021-09-19,fall,9,2,17290000,top_3,medium,0
+security,Security,Movie,Dramas,2021-07-04,summer,7,6,2950000,rank_4_7,low,0
+selling sunset,Selling Sunset,TV Show,Reality TV,2021-11-28,fall,11,3,33080000,top_3,medium,1
+sex education,Sex Education,TV Show,British TV Shows,2021-09-19,fall,9,1,140650000,top_3,high,1
+sex/life,Sex/Life,TV Show,Romantic TV Shows,2021-07-04,summer,7,1,86730000,top_3,high,1
+shadow and bone,Shadow and Bone,TV Show,TV Action & Adventure,2023-03-19,spring,3,2,74470000,top_3,high,1
+shaman king,SHAMAN KING,TV Show,Anime Series,2021-08-15,summer,8,3,12970000,top_3,medium,0
+shameless (u.s.),Shameless (U.S.),TV Show,TV Comedies,2021-10-17,fall,10,4,23530000,rank_4_7,medium,0
+sharkdog,Sharkdog,TV Show,Kids' TV,2021-09-12,fall,9,5,19590000,rank_4_7,medium,0
+she,She,TV Show,Crime TV Shows,2022-06-26,summer,6,7,9490000,rank_4_7,low,0
+shiny_flakes: the teenage drug lord,Shiny_Flakes: The Teenage Drug Lord,Movie,Documentaries,2021-08-08,summer,8,10,3340000,rank_8_10,low,1
+shooter,Shooter,TV Show,Crime TV Shows,2022-03-13,spring,3,7,7390000,rank_4_7,low,1
+silver skates,Silver Skates,Movie,Action & Adventure,2021-07-04,summer,7,1,7390000,top_3,low,0
+sintonia,Sintonia,TV Show,Crime TV Shows,2021-10-31,fall,10,3,25890000,top_3,medium,0
+sky rojo,Sky Rojo,TV Show,International TV Shows,2021-07-25,summer,7,3,12980000,top_3,medium,0
+skylines,Skylines,Movie,Action & Adventure,2021-07-04,summer,7,9,6130000,rank_8_10,low,0
+sniper: ghost shooter,Sniper: Ghost Shooter,Movie,Action & Adventure,2023-02-05,winter,2,4,12490000,rank_4_7,medium,0
+somos.,Somos.,TV Show,Crime TV Shows,2021-07-04,summer,7,5,11510000,rank_4_7,medium,0
+sophie: a murder in west cork,Sophie: A Murder in West Cork,TV Show,British TV Shows,2021-07-04,summer,7,8,12800000,rank_8_10,medium,0
+space force,Space Force,TV Show,TV Comedies,2022-02-27,winter,2,8,12320000,rank_8_10,medium,0
+spider-man: into the spider-verse,Spider-Man: Into the Spider-Verse,Movie,Action & Adventure,2022-03-06,spring,3,4,13940000,rank_4_7,medium,0
+spy kids,Spy Kids,Movie,Children & Family Movies,2023-10-22,fall,10,9,5400000,rank_8_10,low,0
+squid game,Squid Game,TV Show,International TV Shows,2021-09-19,fall,9,1,63190000,top_3,high,1
+stranger things,Stranger Things,TV Show,TV Horror,2022-05-22,spring,5,10,9490000,rank_8_10,low,1
+suits,Suits,TV Show,International TV Shows,2023-06-25,summer,6,5,27700000,rank_4_7,medium,1
+sweet girl,Sweet Girl,Movie,Action & Adventure,2021-08-22,summer,8,1,57160000,top_3,high,1
+sweet magnolias,Sweet Magnolias,TV Show,Romantic TV Shows,2022-02-06,winter,2,5,43000000,rank_4_7,medium,1
+sweet tooth,Sweet Tooth,TV Show,TV Action & Adventure,2021-07-04,summer,7,4,21350000,rank_4_7,medium,1
+synchronic,Synchronic,Movie,Thrillers,2023-05-14,spring,5,5,5930000,rank_4_7,low,0
+the 100,The 100,TV Show,TV Action & Adventure,2021-09-05,fall,9,5,13590000,rank_4_7,medium,0
+the 8th night,The 8th Night,Movie,Horror Movies,2021-07-04,summer,7,4,4480000,rank_4_7,low,0
+the angry birds movie 2,The Angry Birds Movie 2,Movie,Children & Family Movies,2022-08-21,summer,8,7,11470000,rank_4_7,medium,0
+the baby-sitters club,The Baby-Sitters Club,TV Show,Kids' TV,2021-10-17,fall,10,9,17030000,rank_8_10,medium,0
+the blacklist,The Blacklist,TV Show,Crime TV Shows,2022-06-05,summer,6,10,8710000,rank_8_10,low,0
+the call,The Call,Movie,International Movies,2022-04-17,spring,4,7,7710000,rank_4_7,low,0
+the chair,The Chair,TV Show,TV Comedies,2021-08-29,summer,8,4,14020000,rank_4_7,medium,0
+the chosen one,The Chosen One,TV Show,International TV Shows,2023-08-20,summer,8,1,13200000,top_3,medium,0
+the christmas chronicles,The Christmas Chronicles,Movie,Children & Family Movies,2021-12-05,winter,12,8,7940000,rank_8_10,low,1
+the christmas chronicles: part two,The Christmas Chronicles: Part Two,Movie,Children & Family Movies,2021-12-05,winter,12,9,7790000,rank_8_10,low,1
+the circle,The Circle,TV Show,Reality TV,2021-09-19,fall,9,8,14350000,rank_8_10,medium,0
+the clovehitch killer,The Clovehitch Killer,Movie,Dramas,2022-01-16,winter,1,10,7000000,rank_8_10,low,0
+the club,The Club,TV Show,Crime TV Shows,2021-11-14,fall,11,8,7860000,rank_8_10,low,0
+the company men,The Company Men,Movie,Dramas,2023-06-11,summer,6,8,5390000,rank_8_10,low,0
+the cook of castamar,The Cook of Castamar,TV Show,International TV Shows,2021-07-11,summer,7,3,16960000,top_3,medium,1
+the croods,The Croods,Movie,Children & Family Movies,2021-11-21,fall,11,6,13440000,rank_4_7,medium,1
+the crown,The Crown,TV Show,British TV Shows,2022-09-11,fall,9,7,17570000,rank_4_7,medium,1
+the father who moves mountains,The Father Who Moves Mountains,Movie,Dramas,2021-09-19,fall,9,1,14830000,top_3,medium,0
+the great british baking show,The Great British Baking Show,TV Show,British TV Shows,2023-10-08,fall,10,10,3500000,rank_8_10,low,0
+the guide to the perfect family,The Guide to the Perfect Family,Movie,Comedies,2021-07-18,summer,7,4,5130000,rank_4_7,low,0
+the healer,The Healer,Movie,Children & Family Movies,2023-05-21,spring,5,10,3330000,rank_8_10,low,0
+the hurricane heist,The Hurricane Heist,Movie,Action & Adventure,2023-02-05,winter,2,6,10120000,rank_4_7,medium,0
+the ice road,The Ice Road,Movie,Action & Adventure,2021-07-04,summer,7,4,13690000,rank_4_7,medium,0
+the invitation,The Invitation,Movie,Horror Movies,2023-01-01,winter,1,5,12200000,rank_4_7,medium,0
+the killer,The Killer,Movie,Action & Adventure,2023-11-12,fall,11,1,55700000,top_3,high,1
+the kissing booth,The Kissing Booth,Movie,Comedies,2021-08-15,summer,8,7,8590000,rank_4_7,low,0
+the kissing booth 2,The Kissing Booth 2,Movie,Comedies,2021-08-15,summer,8,8,8370000,rank_8_10,low,0
+the kissing booth 3,The Kissing Booth 3,Movie,Comedies,2021-08-15,summer,8,1,90860000,top_3,high,0
+the last kingdom,The Last Kingdom,TV Show,British TV Shows,2022-03-13,spring,3,2,80720000,top_3,high,1
+the last letter from your lover,The Last Letter From Your Lover,Movie,Dramas,2021-07-25,summer,7,2,13140000,top_3,medium,0
+the last mercenary,The Last Mercenary,Movie,Action & Adventure,2021-08-01,summer,8,2,16120000,top_3,medium,1
+the lincoln lawyer,The Lincoln Lawyer,Movie,Dramas,2022-05-15,spring,5,2,45090000,top_3,medium,1
+the longest yard,The Longest Yard,Movie,Classic Movies,2022-01-09,winter,1,10,9960000,rank_8_10,low,0
+the losers,The Losers,Movie,Action & Adventure,2021-08-08,summer,8,5,8040000,rank_4_7,low,0
+the loud house movie,The Loud House Movie,Movie,Children & Family Movies,2021-08-22,summer,8,5,13860000,rank_4_7,medium,0
+the mist,The Mist,TV Show,TV Dramas,2022-06-26,summer,6,8,8400000,rank_8_10,low,0
+the mitchells vs. the machines,The Mitchells vs. The Machines,Movie,Children & Family Movies,2021-07-04,summer,7,10,4890000,rank_8_10,low,0
+the mole,The Mole,TV Show,Reality TV,2022-10-16,fall,10,10,9640000,rank_8_10,low,0
+the old ways,The Old Ways,Movie,Horror Movies,2021-08-29,summer,8,5,13720000,rank_4_7,medium,0
+the outpost,The Outpost,Movie,Action & Adventure,2022-06-05,summer,6,6,10120000,rank_4_7,medium,0
+the queen of flow,The Queen of Flow,TV Show,Crime TV Shows,2021-11-21,fall,11,2,47450000,top_3,medium,1
+the secret diary of an exchange student,The Secret Diary of an Exchange Student,Movie,Comedies,2021-08-22,summer,8,2,7910000,top_3,low,1
+the secret life of pets 2,The Secret Life of Pets 2,Movie,Children & Family Movies,2022-01-16,winter,1,4,9390000,rank_4_7,low,0
+the seven deadly sins,The Seven Deadly Sins,TV Show,Anime Series,2021-07-04,summer,7,2,33240000,top_3,medium,1
+the sinner,The Sinner,TV Show,Crime TV Shows,2022-01-30,winter,1,8,21320000,rank_8_10,medium,0
+the smurfs,The Smurfs,Movie,Children & Family Movies,2023-05-07,spring,5,10,9220000,rank_8_10,low,0
+the snitch cartel: origins,The Snitch Cartel: Origins,TV Show,Crime TV Shows,2021-08-01,summer,8,5,15150000,rank_4_7,medium,1
+the son,The Son,Movie,Dramas,2023-05-28,spring,5,4,7940000,rank_4_7,low,0
+the starling,The Starling,Movie,Comedies,2021-09-26,fall,9,2,16670000,top_3,medium,0
+the stranger,The Stranger,TV Show,British TV Shows,2022-10-23,fall,10,4,17040000,rank_4_7,medium,0
+the stronghold,The Stronghold,Movie,Action & Adventure,2021-09-19,fall,9,3,10360000,top_3,medium,0
+the swarm,The Swarm,Movie,Horror Movies,2021-08-08,summer,8,4,11380000,rank_4_7,medium,0
+the twilight saga: breaking dawn: part 1,The Twilight Saga: Breaking Dawn: Part 1,Movie,Dramas,2021-07-25,summer,7,10,8250000,rank_8_10,low,0
+the twilight saga: breaking dawn: part 2,The Twilight Saga: Breaking Dawn: Part 2,Movie,Dramas,2021-07-25,summer,7,7,9240000,rank_4_7,low,0
+the twilight saga: eclipse,The Twilight Saga: Eclipse,Movie,Dramas,2021-07-25,summer,7,8,9220000,rank_8_10,low,0
+the twilight saga: new moon,The Twilight Saga: New Moon,Movie,Dramas,2021-07-25,summer,7,5,10320000,rank_4_7,medium,0
+the umbrella academy,The Umbrella Academy,TV Show,TV Action & Adventure,2022-06-26,summer,6,1,151760000,top_3,high,1
+the uncanny counter,The Uncanny Counter,TV Show,International TV Shows,2023-08-06,summer,8,7,10400000,rank_4_7,medium,1
+the upshaws,The Upshaws,TV Show,TV Comedies,2023-08-20,summer,8,8,4800000,rank_8_10,low,0
+the vault,The Vault,Movie,Action & Adventure,2021-08-08,summer,8,4,10870000,rank_4_7,medium,0
+the walking dead,The Walking Dead,TV Show,Classic & Cult TV,2021-08-01,summer,8,9,15050000,rank_8_10,medium,0
+the war next-door,The War Next-door,TV Show,International TV Shows,2021-07-11,summer,7,4,13970000,rank_4_7,medium,0
+the water man,The Water Man,Movie,Children & Family Movies,2021-07-18,summer,7,5,11630000,rank_4_7,medium,0
+the whole truth,The Whole Truth,Movie,Dramas,2021-12-05,winter,12,2,11950000,top_3,medium,1
+the witcher,The Witcher,TV Show,International TV Shows,2021-12-12,winter,12,6,14180000,rank_4_7,medium,1
+the witcher: nightmare of the wolf,The Witcher: Nightmare of the Wolf,Movie,Action & Adventure,2021-08-29,summer,8,7,13300000,rank_4_7,medium,0
+the women and the murderer,The Women and the Murderer,Movie,Documentaries,2021-09-12,fall,9,5,2060000,rank_4_7,low,0
+thimmarusu,Thimmarusu,Movie,Dramas,2021-09-05,fall,9,8,1220000,rank_8_10,low,0
+this little love of mine,This Little Love of Mine,Movie,International Movies,2021-07-11,summer,7,6,9390000,rank_4_7,low,0
+time trap,Time Trap,Movie,Action & Adventure,2023-04-30,spring,4,9,3700000,rank_8_10,low,0
+too hot to handle,Too Hot to Handle,TV Show,Reality TV,2021-07-04,summer,7,2,62150000,top_3,high,1
+too hot to handle: brazil,Too Hot to Handle: Brazil,TV Show,International TV Shows,2021-07-25,summer,7,6,9450000,rank_4_7,low,0
+top boy,Top Boy,TV Show,British TV Shows,2022-03-20,spring,3,7,21740000,rank_4_7,medium,0
+top secret ufo projects: declassified,Top Secret UFO Projects: Declassified,TV Show,Docuseries,2021-08-08,summer,8,7,17040000,rank_4_7,medium,0
+toy boy,Toy Boy,TV Show,Crime TV Shows,2022-02-13,winter,2,5,34120000,rank_4_7,medium,0
+triple 9,Triple 9,Movie,Dramas,2022-09-11,fall,9,9,6530000,rank_8_10,low,0
+triple frontier,Triple Frontier,Movie,Action & Adventure,2023-11-26,fall,11,6,7500000,rank_4_7,low,0
+trollhunters: rise of the titans,Trollhunters: Rise of the Titans,Movie,Children & Family Movies,2021-07-25,summer,7,1,16130000,top_3,medium,0
+turbo,Turbo,Movie,Children & Family Movies,2022-05-29,spring,5,8,5310000,rank_8_10,low,0
+turning point: 9/11 and the war on terror,Turning Point: 9/11 and the War on Terror,TV Show,Docuseries,2021-09-05,fall,9,3,24050000,top_3,medium,0
+twilight,Twilight,Movie,Action & Adventure,2021-07-18,summer,7,9,7640000,rank_8_10,low,0
+undercover,Undercover,TV Show,Crime TV Shows,2022-01-16,winter,1,6,28900000,rank_4_7,medium,0
+unsolved mysteries,Unsolved Mysteries,TV Show,Crime TV Shows,2022-10-23,fall,10,6,18930000,rank_4_7,medium,0
+untold: malice at the palace,Untold: Malice at the Palace,Movie,Documentaries,2021-08-15,summer,8,10,6450000,rank_8_10,low,0
+valeria,Valeria,TV Show,International TV Shows,2021-08-15,summer,8,9,9600000,rank_8_10,low,1
+virgin river,Virgin River,TV Show,Romantic TV Shows,2021-07-11,summer,7,2,76170000,top_3,high,1
+vivo,Vivo,Movie,Children & Family Movies,2021-08-08,summer,8,3,21940000,top_3,medium,1
+war,War,Movie,Action & Adventure,2022-11-06,fall,11,4,16760000,rank_4_7,medium,0
+warrior nun,Warrior Nun,TV Show,TV Action & Adventure,2022-11-13,fall,11,6,26220000,rank_4_7,medium,0
+welcome home roscoe jenkins,Welcome Home Roscoe Jenkins,Movie,Comedies,2021-09-05,fall,9,9,6270000,rank_8_10,low,0
+who killed sara?,Who Killed Sara?,TV Show,Crime TV Shows,2022-05-22,spring,5,1,60800000,top_3,high,1
+wish dragon,Wish Dragon,Movie,Children & Family Movies,2021-07-04,summer,7,3,15260000,top_3,medium,1
+woody woodpecker,Woody Woodpecker,Movie,Children & Family Movies,2023-07-09,summer,7,10,6300000,rank_8_10,low,0
+words bubble up like soda pop,Words Bubble Up Like Soda Pop,Movie,Anime Features,2021-08-01,summer,8,10,2180000,rank_8_10,low,0
+workin' moms,Workin' Moms,TV Show,International TV Shows,2022-05-15,spring,5,3,19190000,top_3,medium,0
+world trade center,World Trade Center,Movie,Action & Adventure,2021-08-08,summer,8,10,5050000,rank_8_10,low,0
+worth,Worth,Movie,Dramas,2021-09-05,fall,9,7,6480000,rank_4_7,low,0
+xtreme,Xtreme,Movie,Action & Adventure,2021-07-04,summer,7,8,2650000,rank_8_10,low,1
+you,You,TV Show,Crime TV Shows,2021-10-17,fall,10,1,156170000,top_3,high,1
+young royals,Young Royals,TV Show,International TV Shows,2021-07-11,summer,7,8,9820000,rank_8_10,low,0

@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Netflix Long-run Prediction Summary</title>
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --panel: #ffffff;
+      --ink: #1c2430;
+      --muted: #667282;
+      --line: #dce1e9;
+      --red: #e50914;
+      --blue: #2a66d9;
+      --green: #14875c;
+      --amber: #b66d00;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0; }
+    header { background: #111827; color: #fff; border-bottom: 4px solid var(--red); padding: 22px 28px 18px; }
+    header h1 { margin: 0 0 6px; font-size: 24px; }
+    header p { margin: 0; color: #d7dce5; font-size: 14px; }
+    main { max-width: 1260px; margin: 0 auto; padding: 18px 28px 30px; }
+    .hero { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 14px; margin-bottom: 14px; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+    .headline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .metric { border-left: 4px solid var(--blue); padding-left: 12px; min-height: 78px; }
+    .metric.good { border-color: var(--green); }
+    .metric.warn { border-color: var(--amber); }
+    .label { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .value { font-size: 28px; font-weight: 780; font-variant-numeric: tabular-nums; }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 4px; line-height: 1.4; }
+    .section-title { margin: 0 0 12px; font-size: 16px; font-weight: 760; }
+    .subtle { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .bars { display: grid; gap: 9px; }
+    .bar-row { display: grid; grid-template-columns: 160px 1fr 58px; gap: 8px; align-items: center; font-size: 13px; }
+    .bar-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { height: 10px; border-radius: 999px; background: #e9edf4; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--blue); }
+    .bar-fill.green { background: var(--green); }
+    .bar-fill.amber { background: var(--amber); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: top; }
+    th { color: var(--muted); background: #fbfcfe; font-weight: 720; }
+    .prob { font-weight: 780; font-variant-numeric: tabular-nums; }
+    .pill { display: inline-flex; align-items: center; height: 22px; border-radius: 999px; padding: 0 8px; font-size: 12px; font-weight: 720; }
+    .pill.yes { background: #e7f5ee; color: var(--green); }
+    .pill.no { background: #eef1f6; color: var(--muted); }
+    .summary-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .summary-list li { border-left: 3px solid var(--line); padding-left: 10px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    @media (max-width: 980px) {
+      main { padding: 14px; }
+      .hero, .grid, .headline { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Netflix 롱런 예측 요약</h1>
+    <p>RandomForest_randomized_search · threshold 0.50 · safe feature 기반 test 결과</p>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="panel">
+        <h2 class="section-title">한눈에 보는 결론</h2>
+        <div class="headline">
+          <div class="metric good"><div class="label">예측 롱런 후보</div><div class="value" id="predictedCount">-</div><div class="hint">threshold 0.50 이상</div></div>
+          <div class="metric"><div class="label">Precision</div><div class="value" id="precision">-</div><div class="hint">후보로 찍은 것 중 실제 롱런</div></div>
+          <div class="metric warn"><div class="label">Recall</div><div class="value" id="recall">-</div><div class="hint">실제 롱런 중 잡아낸 비율</div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2 class="section-title">해석 포인트</h2>
+        <ul class="summary-list">
+          <li>이 화면은 검색용 목록보다, 후보 규모와 운영 지표를 빠르게 보는 요약 화면입니다.</li>
+          <li>Precision과 Recall은 threshold 선택에 따라 서로 다른 방향으로 움직일 수 있습니다.</li>
+          <li>확률은 후보 우선순위 점수이며, 롱런의 원인 설명은 아닙니다.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2 class="section-title">Threshold별 tradeoff</h2>
+        <div id="thresholdBars" class="bars"></div>
+      </div>
+      <div class="panel">
+        <h2 class="section-title">콘텐츠 유형 요약</h2>
+        <div id="typeBars" class="bars"></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2 class="section-title">장르별 평균 롱런 확률</h2>
+        <div id="genreBars" class="bars"></div>
+      </div>
+      <div class="panel">
+        <h2 class="section-title">검증 요약</h2>
+        <div class="headline">
+          <div class="metric"><div class="label">Test 콘텐츠</div><div class="value" id="contentCount">-</div><div class="hint">평가 대상</div></div>
+          <div class="metric"><div class="label">False Positive</div><div class="value" id="falsePositive">-</div><div class="hint">비롱런을 후보로 잘못 선택</div></div>
+          <div class="metric"><div class="label">False Negative</div><div class="value" id="falseNegative">-</div><div class="hint">롱런 후보를 놓침</div></div>
+        </div>
+        <p class="subtle">운영에서는 False Positive 비용과 False Negative 비용 중 무엇이 큰지에 따라 threshold를 조정합니다.</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="section-title">상위 롱런 후보 12개</h2>
+      <table>
+        <thead>
+          <tr><th>Title</th><th>Type</th><th>Genre</th><th>First Week</th><th>Probability</th><th>Predicted</th><th>Actual</th></tr>
+        </thead>
+        <tbody id="candidateRows"></tbody>
+      </table>
+      <p class="subtle">Actual은 데모 검증용 label입니다. 실제 운영 시점에는 아직 알 수 없습니다.</p>
+    </section>
+  </main>
+  <script id="dashboard-data" type="application/json">{"summary": {"contentCount": 84, "avgProbability": 0.37476939544954946, "predictedCount": 26, "actualLongRunCount": 25, "precision": 0.6153846153846154, "recall": 0.64, "f1": 0.6274509803921569, "falsePositive": 10, "falseNegative": 9, "bestCvF1": 0.6139771700747311}, "thresholds": [{"threshold": 0.3, "precision": 0.44680851063829785, "recall": 0.84, "f1": 0.5833333333333334, "false_positive": 26, "false_negative": 4, "predicted_count": 47}, {"threshold": 0.4, "precision": 0.5294117647058824, "recall": 0.72, "f1": 0.6101694915254238, "false_positive": 16, "false_negative": 7, "predicted_count": 34}, {"threshold": 0.5, "precision": 0.6153846153846154, "recall": 0.64, "f1": 0.6274509803921569, "false_positive": 10, "false_negative": 9, "predicted_count": 26}, {"threshold": 0.6, "precision": 0.8666666666666667, "recall": 0.52, "f1": 0.65, "false_positive": 2, "false_negative": 12, "predicted_count": 15}, {"threshold": 0.7, "precision": 1.0, "recall": 0.4, "f1": 0.5714285714285714, "false_positive": 0, "false_negative": 15, "predicted_count": 10}], "topCandidates": [{"title_clean": "one piece", "show_title": "ONE PIECE", "type_clean": "TV Show", "primary_genre": "Anime Series", "first_week_date": "2023-09-03", "long_run_flag": 1, "long_run_probability": 0.9980618700827673, "predicted_long_run_flag": 1}, {"title_clean": "manifest", "show_title": "Manifest", "type_clean": "TV Show", "primary_genre": "TV Dramas", "first_week_date": "2021-07-04", "long_run_flag": 1, "long_run_probability": 0.9876636158547256, "predicted_long_run_flag": 1}, {"title_clean": "clickbait", "show_title": "Clickbait", "type_clean": "TV Show", "primary_genre": "Crime TV Shows", "first_week_date": "2021-08-29", "long_run_flag": 1, "long_run_probability": 0.9876387165216307, "predicted_long_run_flag": 1}, {"title_clean": "sweet girl", "show_title": "Sweet Girl", "type_clean": "Movie", "primary_genre": "Action & Adventure", "first_week_date": "2021-08-22", "long_run_flag": 1, "long_run_probability": 0.9468563308102397, "predicted_long_run_flag": 1}, {"title_clean": "dark desire", "show_title": "Dark Desire", "type_clean": "TV Show", "primary_genre": "Crime TV Shows", "first_week_date": "2022-02-06", "long_run_flag": 1, "long_run_probability": 0.9367543493707383, "predicted_long_run_flag": 1}, {"title_clean": "the lincoln lawyer", "show_title": "The Lincoln Lawyer", "type_clean": "Movie", "primary_genre": "Dramas", "first_week_date": "2022-05-15", "long_run_flag": 1, "long_run_probability": 0.9185959317509353, "predicted_long_run_flag": 1}, {"title_clean": "lost in space", "show_title": "Lost in Space", "type_clean": "TV Show", "primary_genre": "TV Action & Adventure", "first_week_date": "2021-12-05", "long_run_flag": 1, "long_run_probability": 0.8938006927805252, "predicted_long_run_flag": 1}, {"title_clean": "kaleidoscope", "show_title": "Kaleidoscope", "type_clean": "Movie", "primary_genre": "Thrillers", "first_week_date": "2023-01-08", "long_run_flag": 1, "long_run_probability": 0.8885469561648667, "predicted_long_run_flag": 1}, {"title_clean": "ginny & georgia", "show_title": "Ginny & Georgia", "type_clean": "TV Show", "primary_genre": "Romantic TV Shows", "first_week_date": "2023-01-08", "long_run_flag": 1, "long_run_probability": 0.8885469561648667, "predicted_long_run_flag": 1}, {"title_clean": "ragnarok", "show_title": "Ragnarok", "type_clean": "TV Show", "primary_genre": "International TV Shows", "first_week_date": "2023-08-27", "long_run_flag": 1, "long_run_probability": 0.8039619417494676, "predicted_long_run_flag": 1}, {"title_clean": "the kissing booth", "show_title": "The Kissing Booth", "type_clean": "Movie", "primary_genre": "Comedies", "first_week_date": "2021-08-15", "long_run_flag": 0, "long_run_probability": 0.6611287944854651, "predicted_long_run_flag": 1}, {"title_clean": "intrusion", "show_title": "Intrusion", "type_clean": "Movie", "primary_genre": "Thrillers", "first_week_date": "2021-09-26", "long_run_flag": 0, "long_run_probability": 0.6478769700967767, "predicted_long_run_flag": 1}], "byGenre": [{"primary_genre": "Romantic TV Shows", "content_count": 3, "avg_probability": 0.6464475332675883}, {"primary_genre": "Thrillers", "content_count": 3, "avg_probability": 0.5461003989648194}, {"primary_genre": "Anime Series", "content_count": 2, "avg_probability": 0.5267544713404537}, {"primary_genre": "British TV Shows", "content_count": 2, "avg_probability": 0.49594842803637174}, {"primary_genre": "Horror Movies", "content_count": 3, "avg_probability": 0.4708710349892468}, {"primary_genre": "Crime TV Shows", "content_count": 11, "avg_probability": 0.4653737164493311}, {"primary_genre": "TV Action & Adventure", "content_count": 5, "avg_probability": 0.40515412865417255}, {"primary_genre": "International TV Shows", "content_count": 10, "avg_probability": 0.3731451411607835}], "byType": [{"type_clean": "TV Show", "content_count": 43, "avg_probability": 0.42874746620678383, "predicted_count": 14}, {"type_clean": "Movie", "content_count": 41, "avg_probability": 0.31815824807001086, "predicted_count": 12}], "model": "RandomForest_randomized_search", "threshold": 0.5}</script>
+  <script>
+    const payload = JSON.parse(document.getElementById('dashboard-data').textContent);
+    const pct = (value) => `${(value * 100).toFixed(1)}%`;
+    const num = (value) => Number(value).toLocaleString('ko-KR');
+    document.getElementById('predictedCount').textContent = num(payload.summary.predictedCount);
+    document.getElementById('precision').textContent = pct(payload.summary.precision);
+    document.getElementById('recall').textContent = pct(payload.summary.recall);
+    document.getElementById('contentCount').textContent = num(payload.summary.contentCount);
+    document.getElementById('falsePositive').textContent = num(payload.summary.falsePositive);
+    document.getElementById('falseNegative').textContent = num(payload.summary.falseNegative);
+
+    function renderBars(id, items, labelKey, valueKey, color = '') {
+      const container = document.getElementById(id);
+      const maxValue = Math.max(...items.map((item) => item[valueKey]), 0.01);
+      container.innerHTML = '';
+      items.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        row.innerHTML = `
+          <div class="bar-label" title="${item[labelKey]}">${item[labelKey]}</div>
+          <div class="bar-track"><div class="bar-fill ${color}" style="width: ${(item[valueKey] / maxValue) * 100}%"></div></div>
+          <div>${pct(item[valueKey])}</div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    renderBars('thresholdBars', payload.thresholds.map((row) => ({ label: row.threshold.toFixed(2), f1: row.f1 })), 'label', 'f1', 'green');
+    renderBars('typeBars', payload.byType.map((row) => ({ label: `${row.type_clean} (${row.content_count})`, avg: row.avg_probability })), 'label', 'avg', 'amber');
+    renderBars('genreBars', payload.byGenre.map((row) => ({ label: `${row.primary_genre} (${row.content_count})`, avg: row.avg_probability })), 'label', 'avg');
+
+    const tbody = document.getElementById('candidateRows');
+    payload.topCandidates.forEach((row) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.show_title}</td>
+        <td>${row.type_clean}</td>
+        <td>${row.primary_genre}</td>
+        <td>${row.first_week_date}</td>
+        <td class="prob">${pct(row.long_run_probability)}</td>
+        <td><span class="pill ${row.predicted_long_run_flag ? 'yes' : 'no'}">${row.predicted_long_run_flag ? 'Long-run' : 'No'}</span></td>
+        <td><span class="pill ${row.long_run_flag ? 'yes' : 'no'}">${row.long_run_flag ? 'Long-run' : 'No'}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  </script>
+</body>
+</html>
